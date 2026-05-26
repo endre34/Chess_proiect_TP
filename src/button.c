@@ -25,6 +25,8 @@ struct Button
 
     buttonAction action;
     void* actionData;
+
+    sfBool pressStartedInside;
 };
 
 static sfBool button_isTextureRectAvailable(sfIntRect textureRect)
@@ -142,6 +144,8 @@ Button* button_create(void)
     button->action = NULL;
     button->actionData = NULL;
 
+    button->pressStartedInside = sfFalse;
+
     sfRectangleShape_setSize(button->shape, (sfVector2f){0.0f, 0.0f});
     sfRectangleShape_setPosition(button->shape, (sfVector2f){0.0f, 0.0f});
     sfRectangleShape_setOrigin(button->shape, (sfVector2f){0.0f, 0.0f});
@@ -173,6 +177,8 @@ Button* button_copy(const Button* button)
 
     copy->action = button->action;
     copy->actionData = button->actionData;
+
+    copy->pressStartedInside = sfFalse;
 
     button_updateTextPosition(copy);
     button_applyStateTextureRect(copy);
@@ -417,20 +423,33 @@ void button_updateMouse(Button* button, const Mouse* mouse)
 
     mouseInside = button_containsPoint(button, mouse_getPosition(mouse));
 
+    if (mouse_wasJustPressed(mouse))
+        button->pressStartedInside = mouseInside;
+
     if (!mouseInside)
     {
         button_setState(button, buttonIdle);
+
+        if (mouse_wasJustReleased(mouse))
+            button->pressStartedInside = sfFalse;
+
         return;
     }
 
     if (mouse_isPressed(mouse))
     {
-        button_setState(button, buttonPressed);
-
-        if (mouse_wasJustPressed(mouse))
-            button_triggerAction(button);
+        if (button->pressStartedInside)
+            button_setState(button, buttonPressed);
 
         return;
+    }
+
+    if (mouse_wasJustReleased(mouse))
+    {
+        if (button->pressStartedInside)
+            button_triggerAction(button);
+
+        button->pressStartedInside = sfFalse;
     }
 
     button_setState(button, buttonHovered);
