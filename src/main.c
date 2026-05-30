@@ -323,12 +323,16 @@ int main(void)
     test_fontLoading(&results, resources);
     test_resourcesBehaviour(&results, resources);
 
+    sfContextSettings settings = {0};
+
+    settings.antialiasingLevel = 8;
+
     window = sfRenderWindow_create(
-        (sfVideoMode){WINDOW_WIDTH, WINDOW_HEIGHT, 32},
-        "Chess: Main Menu Test",
-        sfClose,
-        NULL
-    );
+    (sfVideoMode){WINDOW_WIDTH, WINDOW_HEIGHT, 32},
+    "Chess: Main Menu Test",
+    sfClose,
+    &settings
+);
 
     test_check(
         &results,

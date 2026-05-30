@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.h>
 
-#include "interfaces.h"
+#include "menus.h"
 #include "mouse.h"
 #include "resources.h"
 

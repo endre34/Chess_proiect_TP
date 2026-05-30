@@ -52,19 +52,22 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# debug information files
+# Debug information files
 *.dwo
 
-# main executable file
+# Main executable file
 Chess
 
 # C tags
 .swp
 tags
 
-# media related
+# Media related
 media/Extras
 
-# clangd
+# Clangd
 compile_commands.json
 
+# Cache files
+.cache
+.idx

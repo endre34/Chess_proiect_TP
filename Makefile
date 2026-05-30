@@ -30,7 +30,7 @@ $(OBJ_DIR)/main.o: $(SRC_DIR)/main.c $(INC_DIR)/main_menu.h $(INC_DIR)/mouse.h $
 
 $(OBJ_DIR)/resources.o: $(SRC_DIR)/resources.c $(INC_DIR)/resources.h
 
-$(OBJ_DIR)/main_menu.o: $(SRC_DIR)/main_menu.c $(INC_DIR)/main_menu.h $(INC_DIR)/interfaces.h $(INC_DIR)/ui_elements.h \
+$(OBJ_DIR)/main_menu.o: $(SRC_DIR)/main_menu.c $(INC_DIR)/main_menu.h $(INC_DIR)/menus.h $(INC_DIR)/ui_elements.h \
 						$(INC_DIR)/button.h $(INC_DIR)/display_field.h $(INC_DIR)/mouse.h $(INC_DIR)/resources.h
 
 $(OBJ_DIR)/mouse.o: $(SRC_DIR)/mouse.c $(INC_DIR)/mouse.h
