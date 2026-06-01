@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.h>
 
-#include "frontend/screens/menus.h"
 #include "input/mouse.h"
 #include "resources/resources.h"
 #include "frontend/data/screen_manager_request.h"
@@ -14,8 +13,12 @@ typedef enum ScreenId
 {
     screenIdMainMenu,
     screenIdSettingsMenu,
+    screenIdControlsMenu,
     screenIdCreditsMenu,
-    screenIdGameSetupMenu
+
+    screenIdGameSetupMenu,
+    screenIdLocalPvPSetupMenu,
+    screenIdEnginePvESetupMenu
 
 } ScreenId;
 
@@ -25,6 +28,7 @@ void screenManager_destroy(screenManager*);
 
 /* Input */
 void screenManager_updateMouse(screenManager*, const Mouse*);
+void screenManager_updateKeyboard(screenManager*, const sfEvent*);
 
 /* State */
 void screenManager_setActive(screenManager*, sfBool);

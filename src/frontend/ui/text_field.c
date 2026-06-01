@@ -1,5 +1,6 @@
 #include "frontend/ui/text_field.h"
 
+#include <SFML/Graphics/Color.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -31,6 +32,12 @@ struct TextField
 
     TextureInfo textureInfo;
     TextFieldState state;
+
+    sfColor outlineColor;
+    float outlineThickness;
+
+    sfColor selectedOutlineColor;
+    float selectedOutlineThickness;
 };
 
 static sfBool textField_isTextureRectAvailable(sfIntRect textureRect)
@@ -88,6 +95,20 @@ static void textField_updateTextPosition(TextField* textField)
     sfText_setPosition(textField->text, textPosition);
 }
 
+static void textField_applyStateOutline(TextField* textField)
+{
+    if (textField->state == textFieldSelected)
+    {
+        sfRectangleShape_setOutlineColor(textField->shape, textField->selectedOutlineColor);
+        sfRectangleShape_setOutlineThickness(textField->shape, textField->selectedOutlineThickness);
+    }
+    else
+    {
+        sfRectangleShape_setOutlineColor(textField->shape, textField->outlineColor);
+        sfRectangleShape_setOutlineThickness(textField->shape, textField->outlineThickness);
+    }
+}
+
 static void textField_applyStateTextureRect(TextField* textField)
 {
     if (textField->state == textFieldSelected)
@@ -128,10 +149,17 @@ static void textField_applyStateTextureRect(TextField* textField)
         sfRectangleShape_setTextureRect(textField->shape, textField->textureInfo.idle);
 }
 
+static void textField_applyStateVisuals(TextField* textField)
+{
+    textField_applyStateTextureRect(textField);
+    textField_applyStateOutline(textField);
+    textField_updateTextPosition(textField);
+}
+
 static void textField_setState(TextField* textField, TextFieldState state)
 {
     textField->state = state;
-    textField_applyStateTextureRect(textField);
+    textField_applyStateVisuals(textField);
 }
 
 static void textField_syncText(TextField* textField)
@@ -188,19 +216,23 @@ TextField* textField_create(void)
 
     textField->state = textFieldIdle;
 
+    textField->outlineColor = sfBlack;
+    textField->outlineThickness = 0.0f;
+
+    textField->selectedOutlineColor = sfCyan;
+    textField->selectedOutlineThickness = 5.0f;
+
     sfRectangleShape_setSize(textField->shape, (sfVector2f){0.0f, 0.0f});
     sfRectangleShape_setPosition(textField->shape, (sfVector2f){0.0f, 0.0f});
     sfRectangleShape_setOrigin(textField->shape, (sfVector2f){0.0f, 0.0f});
     sfRectangleShape_setFillColor(textField->shape, sfWhite);
-    sfRectangleShape_setOutlineColor(textField->shape, sfBlack);
-    sfRectangleShape_setOutlineThickness(textField->shape, 0.0f);
 
     sfText_setString(textField->text, "");
     sfText_setCharacterSize(textField->text, 30);
     sfText_setLetterSpacing(textField->text, 1.0f);
     sfText_setFillColor(textField->text, sfBlack);
 
-    textField_updateTextPosition(textField);
+    textField_applyStateVisuals(textField);
 
     return textField;
 }
@@ -222,8 +254,13 @@ TextField* textField_copy(const TextField* textField)
     copy->textureInfo = textField->textureInfo;
     copy->state = textField->state;
 
-    textField_updateTextPosition(copy);
-    textField_applyStateTextureRect(copy);
+    copy->outlineColor = textField->outlineColor;
+    copy->outlineThickness = textField->outlineThickness;
+
+    copy->selectedOutlineColor = textField->selectedOutlineColor;
+    copy->selectedOutlineThickness = textField->selectedOutlineThickness;
+
+    textField_applyStateVisuals(copy);
 
     return copy;
 }
@@ -378,7 +415,7 @@ void textField_setTextureRect_onIdle(TextField* textField, sfIntRect idle)
     textField->textureInfo.idle = idle;
     textField->textureInfo.idleAvailability = textField_isTextureRectAvailable(idle);
 
-    textField_applyStateTextureRect(textField);
+    textField_applyStateVisuals(textField);
 }
 
 sfIntRect textField_getTextureRect_onIdle(const TextField* textField)
@@ -394,7 +431,7 @@ void textField_setTextureRect_onHover(TextField* textField, sfIntRect hover)
     textField->textureInfo.hover = hover;
     textField->textureInfo.hoverAvailability = textField_isTextureRectAvailable(hover);
 
-    textField_applyStateTextureRect(textField);
+    textField_applyStateVisuals(textField);
 }
 
 sfIntRect textField_getTextureRect_onHover(const TextField* textField)
@@ -410,7 +447,7 @@ void textField_setTextureRect_onSelected(TextField* textField, sfIntRect selecte
     textField->textureInfo.selected = selected;
     textField->textureInfo.selectedAvailability = textField_isTextureRectAvailable(selected);
 
-    textField_applyStateTextureRect(textField);
+    textField_applyStateVisuals(textField);
 }
 
 sfIntRect textField_getTextureRect_onSelected(const TextField* textField)
@@ -423,23 +460,46 @@ sfIntRect textField_getTextureRect_onSelected(const TextField* textField)
 
 void textField_setOutlineColor(TextField* textField, sfColor color)
 {
-    sfRectangleShape_setOutlineColor(textField->shape, color);
+    textField->outlineColor = color;
+    textField_applyStateVisuals(textField);
 }
 
 sfColor textField_getOutlineColor(const TextField* textField)
 {
-    return sfRectangleShape_getOutlineColor(textField->shape);
+    return textField->outlineColor;
 }
 
 void textField_setOutlineThickness(TextField* textField, float thickness)
 {
-    sfRectangleShape_setOutlineThickness(textField->shape, thickness);
-    textField_updateTextPosition(textField);
+    textField->outlineThickness = thickness;
+    textField_applyStateVisuals(textField);
 }
 
 float textField_getOutlineThickness(const TextField* textField)
 {
-    return sfRectangleShape_getOutlineThickness(textField->shape);
+    return textField->outlineThickness;
+}
+
+void textField_setSelectedOutlineColor(TextField* textField, sfColor color)
+{
+    textField->selectedOutlineColor = color;
+    textField_applyStateVisuals(textField);
+}
+
+sfColor textField_getSelectedOutlineColor(const TextField* textField)
+{
+    return textField->selectedOutlineColor;
+}
+
+void textField_setSelectedOutlineThickness(TextField* textField, float thickness)
+{
+    textField->selectedOutlineThickness = thickness;
+    textField_applyStateVisuals(textField);
+}
+
+float textField_getSelectedOutlineThickness(const TextField* textField)
+{
+    return textField->selectedOutlineThickness;
 }
 
 TextFieldState textField_getState(const TextField* textField)
@@ -492,7 +552,7 @@ void textField_updateMouse(TextField* textField, const Mouse* mouse)
 
     mouseInside = textField_containsPoint(textField, mouse_getPosition(mouse));
 
-    if (mouse_wasJustPressed(mouse) && mouseInside)
+    if (mouse_wasJustPressed(mouse) == sfTrue && mouseInside == sfTrue)
     {
         if (textField->state == textFieldSelected)
             textField_setState(textField, textFieldHovered);
@@ -505,7 +565,7 @@ void textField_updateMouse(TextField* textField, const Mouse* mouse)
     if (textField->state == textFieldSelected)
         return;
 
-    if (mouseInside)
+    if (mouseInside == sfTrue)
         textField_setState(textField, textFieldHovered);
     else
         textField_setState(textField, textFieldIdle);

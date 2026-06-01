@@ -75,6 +75,12 @@ sfColor textField_getOutlineColor(const TextField*);
 void textField_setOutlineThickness(TextField*, float);
 float textField_getOutlineThickness(const TextField*);
 
+void textField_setSelectedOutlineColor(TextField*, sfColor);
+sfColor textField_getSelectedOutlineColor(const TextField*);
+
+void textField_setSelectedOutlineThickness(TextField*, float);
+float textField_getSelectedOutlineThickness(const TextField*);
+
 /* State and input */
 TextFieldState textField_getState(const TextField*);
 sfBool textField_isSelected(const TextField*);

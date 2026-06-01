@@ -1,9 +1,13 @@
 #include "frontend/screen_manager.h"
 
 #include "frontend/screens/main_menu.h"
+#include "frontend/screens/menus.h"
 #include "frontend/screens/settings_menu.h"
+#include "frontend/screens/controls_menu.h"
 #include "frontend/screens/credits_menu.h"
 #include "frontend/screens/game_setup_menu.h"
+#include "frontend/screens/local_pvp_setup_menu.h"
+#include "frontend/screens/engine_pve_setup_menu.h"
 
 #include <stdlib.h>
 
@@ -11,8 +15,12 @@ struct screenManager
 {
     mainMenu* main;
     settingsMenu* settings;
+    controlsMenu* controls;
     creditsMenu* credits;
+
     gameSetupMenu* gameSetup;
+    localPvPSetupMenu* localPvPSetup;
+    enginePvESetupMenu* enginePvESetup;
 
     ScreenId currentScreen;
     ScreenManagerRequest request;
@@ -24,13 +32,18 @@ static void screenManager_setOnlyActiveScreen(screenManager*, ScreenId);
 
 static void screenManager_updateMainMenu(screenManager*, const Mouse*);
 static void screenManager_updateSettingsMenu(screenManager*, const Mouse*);
+static void screenManager_updateControlsMenu(screenManager*, const Mouse*);
 static void screenManager_updateCreditsMenu(screenManager*, const Mouse*);
+
 static void screenManager_updateGameSetupMenu(screenManager*, const Mouse*);
+static void screenManager_updateLocalPvPSetupMenu(screenManager*, const Mouse*);
+static void screenManager_updateEnginePvESetupMenu(screenManager*, const Mouse*);
 
 static void screenManager_setOnlyActiveScreen(screenManager* manager, ScreenId screen)
 {
     mainMenu_setActive(manager->main, sfFalse);
     settingsMenu_setActive(manager->settings, sfFalse);
+    controlsMenu_setActive(manager->controls, sfFalse);
     creditsMenu_setActive(manager->credits, sfFalse);
     gameSetupMenu_setActive(manager->gameSetup, sfFalse);
 
@@ -46,12 +59,24 @@ static void screenManager_setOnlyActiveScreen(screenManager* manager, ScreenId s
             settingsMenu_setActive(manager->settings, sfTrue);
             break;
 
+        case screenIdControlsMenu:
+            controlsMenu_setActive(manager->controls, sfTrue);
+            break;
+
         case screenIdCreditsMenu:
             creditsMenu_setActive(manager->credits, sfTrue);
             break;
 
         case screenIdGameSetupMenu:
             gameSetupMenu_setActive(manager->gameSetup, sfTrue);
+            break;
+
+        case screenIdLocalPvPSetupMenu:
+            localPvPSetupMenu_setActive(manager->localPvPSetup, sfTrue);
+            break;
+
+        case screenIdEnginePvESetupMenu:
+            enginePvESetupMenu_setActive(manager->enginePvESetup, sfTrue);
             break;
     }
 }
@@ -106,14 +131,30 @@ static void screenManager_updateSettingsMenu(screenManager* manager, const Mouse
             break;
 
         case settingsMenuActionControls:
-            /*
-                Later: switch to a controls submenu.
-                For now this intentionally does nothing.
-            */
+            screenManager_setOnlyActiveScreen(manager, screenIdControlsMenu);
             break;
 
         case settingsMenuActionBack:
             screenManager_setOnlyActiveScreen(manager, screenIdMainMenu);
+            break;
+    }
+}
+
+static void screenManager_updateControlsMenu(screenManager* manager, const Mouse* mouse)
+{
+    ControlsMenuAction action;
+
+    controlsMenu_updateMouse(manager->controls, mouse);
+
+    action = controlsMenu_consumeAction(manager->controls);
+
+    switch (action)
+    {
+        case controlsMenuActionNone:
+            break;
+
+        case controlsMenuActionBack:
+            screenManager_setOnlyActiveScreen(manager, screenIdSettingsMenu);
             break;
     }
 }
@@ -151,17 +192,69 @@ static void screenManager_updateGameSetupMenu(screenManager* manager, const Mous
             break;
 
         case gameSetupMenuActionLocalPvP:
-            manager->request.type = screenManagerRequestStartGame;
-            manager->request.data.gameSetup = gameSetupMenu_getData(manager->gameSetup);
+            screenManager_setOnlyActiveScreen(manager, screenIdLocalPvPSetupMenu);
             break;
 
         case gameSetupMenuActionVsEngine:
-            manager->request.type = screenManagerRequestStartGame;
-            manager->request.data.gameSetup = gameSetupMenu_getData(manager->gameSetup);
+            screenManager_setOnlyActiveScreen(manager, screenIdEnginePvESetupMenu);
             break;
 
         case gameSetupMenuActionBack:
             screenManager_setOnlyActiveScreen(manager, screenIdMainMenu);
+            break;
+    }
+}
+
+static void screenManager_updateLocalPvPSetupMenu(screenManager* manager, const Mouse* mouse)
+{
+    LocalPvPSetupMenuAction action;
+    LocalPvPSetup setup;
+
+    localPvPSetupMenu_updateMouse(manager->localPvPSetup, mouse);
+
+    action = localPvPSetupMenu_consumeAction(manager->localPvPSetup);
+
+    switch (action)
+    {
+        case localPvPSetupMenuActionNone:
+            break;
+
+        case localPvPSetupMenuActionStart:
+            setup = localPvPSetupMenu_getData(manager->localPvPSetup);
+
+            manager->request.type = screenManagerRequestStartGame;
+            manager->request.data.gameSetup = gameSetupData_makeLocalPvP(setup);
+            break;
+
+        case localPvPSetupMenuActionBack:
+            screenManager_setOnlyActiveScreen(manager, screenIdGameSetupMenu);
+            break;
+    }
+}
+
+static void screenManager_updateEnginePvESetupMenu(screenManager* manager, const Mouse* mouse)
+{
+    EnginePvESetupMenuAction action;
+    VsEngineSetup setup;
+
+    enginePvESetupMenu_updateMouse(manager->enginePvESetup, mouse);
+
+    action = enginePvESetupMenu_consumeAction(manager->enginePvESetup);
+
+    switch (action)
+    {
+        case enginePvESetupMenuActionNone:
+            break;
+
+        case enginePvESetupMenuActionStart:
+            setup = enginePvESetupMenu_getData(manager->enginePvESetup);
+
+            manager->request.type = screenManagerRequestStartGame;
+            manager->request.data.gameSetup = gameSetupData_makeVsEngine(setup);
+            break;
+
+        case enginePvESetupMenuActionBack:
+            screenManager_setOnlyActiveScreen(manager, screenIdGameSetupMenu);
             break;
     }
 }
@@ -180,8 +273,11 @@ screenManager* screenManager_create(sfVector2i topLeft, sfVector2i bottomRight, 
 
     manager->main = NULL;
     manager->settings = NULL;
+    manager->controls = NULL;
     manager->credits = NULL;
     manager->gameSetup = NULL;
+    manager->localPvPSetup = NULL;
+    manager->enginePvESetup = NULL;
 
     manager->currentScreen = screenIdMainMenu;
     manager->request = screenManagerRequest_getNone();
@@ -189,14 +285,20 @@ screenManager* screenManager_create(sfVector2i topLeft, sfVector2i bottomRight, 
 
     manager->main = mainMenu_create(topLeft, bottomRight, resources);
     manager->settings = settingsMenu_create(topLeft, bottomRight, resources);
+    manager->controls = controlsMenu_create(topLeft, bottomRight, resources);
     manager->credits = creditsMenu_create(topLeft, bottomRight, resources);
     manager->gameSetup = gameSetupMenu_create(topLeft, bottomRight, resources);
+    manager->localPvPSetup = localPvPSetupMenu_create(topLeft, bottomRight, resources);
+    manager->enginePvESetup = enginePvESetupMenu_create(topLeft, bottomRight, resources);
 
     if (
-        manager->main == NULL ||
-        manager->settings == NULL ||
-        manager->credits == NULL ||
-        manager->gameSetup == NULL
+    manager->main == NULL ||
+    manager->settings == NULL ||
+    manager->controls == NULL ||
+    manager->credits == NULL ||
+    manager->gameSetup == NULL ||
+    manager->localPvPSetup == NULL ||
+    manager->enginePvESetup == NULL
     )
     {
         screenManager_destroy(manager);
@@ -219,11 +321,20 @@ void screenManager_destroy(screenManager* manager)
     if (manager->settings != NULL)
         settingsMenu_destroy(manager->settings);
 
+    if (manager->controls != NULL)
+        controlsMenu_destroy(manager->controls);
+
     if (manager->credits != NULL)
         creditsMenu_destroy(manager->credits);
 
     if (manager->gameSetup != NULL)
         gameSetupMenu_destroy(manager->gameSetup);
+
+    if (manager->localPvPSetup != NULL)
+        localPvPSetupMenu_destroy(manager->localPvPSetup);
+
+    if (manager->enginePvESetup != NULL)
+        enginePvESetupMenu_destroy(manager->enginePvESetup);
 
     free(manager);
 }
@@ -246,12 +357,47 @@ void screenManager_updateMouse(screenManager* manager, const Mouse* mouse)
             screenManager_updateSettingsMenu(manager, mouse);
             break;
 
+        case screenIdControlsMenu:
+            screenManager_updateControlsMenu(manager, mouse);
+            break;
+
         case screenIdCreditsMenu:
             screenManager_updateCreditsMenu(manager, mouse);
             break;
 
         case screenIdGameSetupMenu:
             screenManager_updateGameSetupMenu(manager, mouse);
+            break;
+
+        case screenIdLocalPvPSetupMenu:
+            screenManager_updateLocalPvPSetupMenu(manager, mouse);
+            break;
+
+        case screenIdEnginePvESetupMenu:
+            screenManager_updateEnginePvESetupMenu(manager, mouse);
+            break;
+    }
+}
+
+void screenManager_updateKeyboard(screenManager* manager, const sfEvent* event)
+{
+    if (manager == NULL || event == NULL)
+        return;
+
+    if (!manager->active)
+        return;
+
+    switch (manager->currentScreen)
+    {
+        case screenIdLocalPvPSetupMenu:
+            localPvPSetupMenu_updateKeyboard(manager->localPvPSetup, event);
+            break;
+
+        case screenIdEnginePvESetupMenu:
+            enginePvESetupMenu_updateKeyboard(manager->enginePvESetup, event);
+            break;
+
+        default:
             break;
     }
 }
@@ -327,12 +473,24 @@ void screenManager_draw(sfRenderWindow* window, const screenManager* manager)
             settingsMenu_draw(window, manager->settings);
             break;
 
+        case screenIdControlsMenu:
+            controlsMenu_draw(window, manager->controls);
+            break;
+
         case screenIdCreditsMenu:
             creditsMenu_draw(window, manager->credits);
             break;
 
         case screenIdGameSetupMenu:
             gameSetupMenu_draw(window, manager->gameSetup);
+            break;
+
+        case screenIdLocalPvPSetupMenu:
+            localPvPSetupMenu_draw(window, manager->localPvPSetup);
+            break;
+
+        case screenIdEnginePvESetupMenu:
+            enginePvESetupMenu_draw(window, manager->enginePvESetup);
             break;
     }
 }

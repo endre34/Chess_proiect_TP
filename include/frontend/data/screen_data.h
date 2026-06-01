@@ -17,7 +17,7 @@ typedef struct SettingsData
 typedef enum GameMode
 {
     gameModeLocalPvP,
-    gameModeVsEngine,
+    gameModeVsEngine
 
 } GameMode;
 
@@ -31,8 +31,8 @@ typedef enum PlayerColor
 
 typedef struct LocalPvPSetup
 {
-    unsigned int whiteTimeSeconds;
-    unsigned int blackTimeSeconds;
+    unsigned int startingTimeSeconds;
+    unsigned int incrementSeconds;
 
 } LocalPvPSetup;
 
@@ -42,11 +42,7 @@ typedef struct VsEngineSetup
 
     int engineLevel;
 
-    unsigned int playerTimeSeconds;
-    unsigned int engineTimeSeconds;
-
 } VsEngineSetup;
-
 
 typedef struct GameSetupData
 {

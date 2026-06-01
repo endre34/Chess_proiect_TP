@@ -1,4 +1,4 @@
-#include "frontend/screens/credits_menu.h"
+#include "frontend/screens/controls_menu.h"
 
 #include "frontend/ui/button.h"
 #include "frontend/ui/display_field.h"
@@ -11,7 +11,7 @@
 #define MENU_TITLE_TEXTURE_WIDTH 1596
 #define MENU_TITLE_TEXTURE_HEIGHT 316
 
-struct creditsMenu
+struct controlsMenu
 {
     DisplayField* titlebar;
 
@@ -19,7 +19,7 @@ struct creditsMenu
 
     sfBool active;
 
-    CreditsMenuAction action;
+    ControlsMenuAction action;
 };
 
 static const sfIntRect MENU_BUTTON_IDLE_RECT = {
@@ -50,23 +50,23 @@ static const sfIntRect MENU_TITLE_RECT = {
     MENU_TITLE_TEXTURE_HEIGHT
 };
 
-static void creditsMenu_onBack(void*);
+static void controlsMenu_onBack(void*);
 
-static void creditsMenu_applyResources(creditsMenu*, const Resources*);
-static void creditsMenu_setTexts(creditsMenu*);
-static void creditsMenu_setStyle(creditsMenu*);
-static void creditsMenu_setLayout(creditsMenu*, sfVector2i, sfVector2i);
-static void creditsMenu_setActions(creditsMenu*);
+static void controlsMenu_applyResources(controlsMenu*, const Resources*);
+static void controlsMenu_setTexts(controlsMenu*);
+static void controlsMenu_setStyle(controlsMenu*);
+static void controlsMenu_setLayout(controlsMenu*, sfVector2i, sfVector2i);
+static void controlsMenu_setActions(controlsMenu*);
 
-static void creditsMenu_setupButtonTexture(Button*, const sfTexture*);
-static void creditsMenu_setupButtonText(Button*, const sfFont*);
+static void controlsMenu_setupButtonTexture(Button*, const sfTexture*);
+static void controlsMenu_setupButtonText(Button*, const sfFont*);
 
-static void creditsMenu_onBack(void* data)
+static void controlsMenu_onBack(void* data)
 {
-    ((creditsMenu*)data)->action = creditsMenuActionBack;
+    ((controlsMenu*)data)->action = controlsMenuActionBack;
 }
 
-static void creditsMenu_setupButtonTexture(Button* button, const sfTexture* texture)
+static void controlsMenu_setupButtonTexture(Button* button, const sfTexture* texture)
 {
     button_setTexture(button, texture, sfFalse);
 
@@ -75,7 +75,7 @@ static void creditsMenu_setupButtonTexture(Button* button, const sfTexture* text
     button_setTextureRect_onPress(button, MENU_BUTTON_PRESS_RECT);
 }
 
-static void creditsMenu_setupButtonText(Button* button, const sfFont* font)
+static void controlsMenu_setupButtonText(Button* button, const sfFont* font)
 {
     button_setTextFont(button, font);
     button_setTextColor(button, sfWhite);
@@ -83,7 +83,7 @@ static void creditsMenu_setupButtonText(Button* button, const sfFont* font)
     button_setLetterSpacing(button, 1.3f);
 }
 
-static void creditsMenu_applyResources(creditsMenu* menu, const Resources* resources)
+static void controlsMenu_applyResources(controlsMenu* menu, const Resources* resources)
 {
     const sfTexture* buttonTexture;
     const sfTexture* titleBoardTexture;
@@ -101,18 +101,18 @@ static void creditsMenu_applyResources(creditsMenu* menu, const Resources* resou
     displayField_setTextureRect(menu->titlebar, MENU_TITLE_RECT);
     displayField_setTextFont(menu->titlebar, titleFont);
 
-    creditsMenu_setupButtonTexture(menu->back, buttonTexture);
-    creditsMenu_setupButtonText(menu->back, buttonFont);
+    controlsMenu_setupButtonTexture(menu->back, buttonTexture);
+    controlsMenu_setupButtonText(menu->back, buttonFont);
 }
 
-static void creditsMenu_setTexts(creditsMenu* menu)
+static void controlsMenu_setTexts(controlsMenu* menu)
 {
-    displayField_setTextString(menu->titlebar, "CREDITS");
+    displayField_setTextString(menu->titlebar, "CONTROLS");
 
     button_setTextString(menu->back, "Back");
 }
 
-static void creditsMenu_setStyle(creditsMenu* menu)
+static void controlsMenu_setStyle(controlsMenu* menu)
 {
     displayField_setFillColor(menu->titlebar, sfWhite);
     displayField_setTextColor(menu->titlebar, sfWhite);
@@ -130,7 +130,7 @@ static void creditsMenu_setStyle(creditsMenu* menu)
     button_setOutlineThickness(menu->back, 0.0f);
 }
 
-static void creditsMenu_setLayout(creditsMenu* menu, sfVector2i topLeft, sfVector2i bottomRight)
+static void controlsMenu_setLayout(controlsMenu* menu, sfVector2i topLeft, sfVector2i bottomRight)
 {
     float areaWidth;
     float areaHeight;
@@ -162,19 +162,19 @@ static void creditsMenu_setLayout(creditsMenu* menu, sfVector2i topLeft, sfVecto
     button_setPosition(menu->back, (sfVector2f){centerX, backY});
 }
 
-static void creditsMenu_setActions(creditsMenu* menu)
+static void controlsMenu_setActions(controlsMenu* menu)
 {
-    button_setAction(menu->back, creditsMenu_onBack, menu);
+    button_setAction(menu->back, controlsMenu_onBack, menu);
 }
 
-creditsMenu* creditsMenu_create(sfVector2i topLeft, sfVector2i bottomRight, const Resources* resources)
+controlsMenu* controlsMenu_create(sfVector2i topLeft, sfVector2i bottomRight, const Resources* resources)
 {
-    creditsMenu* menu;
+    controlsMenu* menu;
 
     if (resources == NULL)
         return NULL;
 
-    menu = malloc(sizeof(creditsMenu));
+    menu = malloc(sizeof(controlsMenu));
 
     if (menu == NULL)
         return NULL;
@@ -183,7 +183,7 @@ creditsMenu* creditsMenu_create(sfVector2i topLeft, sfVector2i bottomRight, cons
     menu->back = NULL;
 
     menu->active = sfTrue;
-    menu->action = creditsMenuActionNone;
+    menu->action = controlsMenuActionNone;
 
     menu->titlebar = displayField_create();
     menu->back = button_create();
@@ -193,20 +193,20 @@ creditsMenu* creditsMenu_create(sfVector2i topLeft, sfVector2i bottomRight, cons
         menu->back == NULL
     )
     {
-        creditsMenu_destroy(menu);
+        controlsMenu_destroy(menu);
         return NULL;
     }
 
-    creditsMenu_applyResources(menu, resources);
-    creditsMenu_setTexts(menu);
-    creditsMenu_setStyle(menu);
-    creditsMenu_setLayout(menu, topLeft, bottomRight);
-    creditsMenu_setActions(menu);
+    controlsMenu_applyResources(menu, resources);
+    controlsMenu_setTexts(menu);
+    controlsMenu_setStyle(menu);
+    controlsMenu_setLayout(menu, topLeft, bottomRight);
+    controlsMenu_setActions(menu);
 
     return menu;
 }
 
-void creditsMenu_destroy(creditsMenu* menu)
+void controlsMenu_destroy(controlsMenu* menu)
 {
     if (menu == NULL)
         return;
@@ -220,7 +220,7 @@ void creditsMenu_destroy(creditsMenu* menu)
     free(menu);
 }
 
-void creditsMenu_updateMouse(creditsMenu* menu, const Mouse* mouse)
+void controlsMenu_updateMouse(controlsMenu* menu, const Mouse* mouse)
 {
     if (menu == NULL || mouse == NULL)
         return;
@@ -231,7 +231,7 @@ void creditsMenu_updateMouse(creditsMenu* menu, const Mouse* mouse)
     button_updateMouse(menu->back, mouse);
 }
 
-void creditsMenu_setActive(creditsMenu* menu, sfBool active)
+void controlsMenu_setActive(controlsMenu* menu, sfBool active)
 {
     if (menu == NULL)
         return;
@@ -239,7 +239,7 @@ void creditsMenu_setActive(creditsMenu* menu, sfBool active)
     menu->active = active;
 }
 
-sfBool creditsMenu_isActive(const creditsMenu* menu)
+sfBool controlsMenu_isActive(const controlsMenu* menu)
 {
     if (menu == NULL)
         return sfFalse;
@@ -247,28 +247,28 @@ sfBool creditsMenu_isActive(const creditsMenu* menu)
     return menu->active;
 }
 
-CreditsMenuAction creditsMenu_getAction(const creditsMenu* menu)
+ControlsMenuAction controlsMenu_getAction(const controlsMenu* menu)
 {
     if (menu == NULL)
-        return creditsMenuActionNone;
+        return controlsMenuActionNone;
 
     return menu->action;
 }
 
-CreditsMenuAction creditsMenu_consumeAction(creditsMenu* menu)
+ControlsMenuAction controlsMenu_consumeAction(controlsMenu* menu)
 {
-    CreditsMenuAction action;
+    ControlsMenuAction action;
 
     if (menu == NULL)
-        return creditsMenuActionNone;
+        return controlsMenuActionNone;
 
     action = menu->action;
-    menu->action = creditsMenuActionNone;
+    menu->action = controlsMenuActionNone;
 
     return action;
 }
 
-void creditsMenu_draw(sfRenderWindow* window, const creditsMenu* menu)
+void controlsMenu_draw(sfRenderWindow* window, const controlsMenu* menu)
 {
     if (window == NULL || menu == NULL)
         return;

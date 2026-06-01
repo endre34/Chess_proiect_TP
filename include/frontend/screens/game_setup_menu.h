@@ -6,7 +6,6 @@
 #include "frontend/screens/menus.h"
 #include "input/mouse.h"
 #include "resources/resources.h"
-#include "frontend/data/screen_data.h"
 
 typedef enum GameSetupMenuAction
 {
@@ -31,8 +30,6 @@ sfBool gameSetupMenu_isActive(const gameSetupMenu*);
 
 GameSetupMenuAction gameSetupMenu_getAction(const gameSetupMenu*);
 GameSetupMenuAction gameSetupMenu_consumeAction(gameSetupMenu*);
-
-GameSetupData gameSetupMenu_getData(const gameSetupMenu*);
 
 /* Utility */
 void gameSetupMenu_draw(sfRenderWindow*, const gameSetupMenu*);

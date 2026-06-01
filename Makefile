@@ -32,6 +32,9 @@ OBJ = $(OBJ_DIR)/main.o \
 		$(OBJ_DIR)/$(SCREENS)/game_setup_menu.o \
 		$(OBJ_DIR)/$(SCREENS)/main_menu.o \
 		$(OBJ_DIR)/$(SCREENS)/settings_menu.o \
+		$(OBJ_DIR)/$(SCREENS)/controls_menu.o \
+		$(OBJ_DIR)/$(SCREENS)/local_pvp_setup_menu.o \
+		$(OBJ_DIR)/$(SCREENS)/engine_pve_setup_menu.o \
 		$(OBJ_DIR)/$(UI)/button.o \
 		$(OBJ_DIR)/$(UI)/display_field.o \
 		$(OBJ_DIR)/$(UI)/text_field.o \

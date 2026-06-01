@@ -14,8 +14,8 @@ LocalPvPSetup localPvPSetup_getDefault(void)
 {
     LocalPvPSetup setup;
 
-    setup.whiteTimeSeconds = 600;
-    setup.blackTimeSeconds = 600;
+    setup.startingTimeSeconds = 15 * 60;
+    setup.incrementSeconds = 0;
 
     return setup;
 }
@@ -27,9 +27,6 @@ VsEngineSetup vsEngineSetup_getDefault(void)
     setup.playerColor = playerColorWhite;
 
     setup.engineLevel = 5;
-
-    setup.playerTimeSeconds = 600;
-    setup.engineTimeSeconds = 600;
 
     return setup;
 }

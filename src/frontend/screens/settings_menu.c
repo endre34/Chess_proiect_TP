@@ -4,7 +4,6 @@
 #include "frontend/ui/display_field.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 
 #define MENU_BUTTON_TEXTURE_WIDTH 894
 #define MENU_BUTTON_TEXTURE_HEIGHT 234
@@ -15,7 +14,6 @@
 struct settingsMenu
 {
     DisplayField* titlebar;
-    DisplayField* info;
 
     Button* sound;
     Button* fullscreen;
@@ -130,20 +128,16 @@ static void settingsMenu_applyResources(settingsMenu* menu, const Resources* res
 
     const sfFont* titleFont;
     const sfFont* buttonFont;
-    const sfFont* infoFont;
 
     buttonTexture = resources_getTexture(resources, resourceTextureButtons);
     titleBoardTexture = resources_getTexture(resources, resourceTextureTitleBoard);
 
     titleFont = resources_getFont(resources, resourceFontCinzelSemiBold);
     buttonFont = resources_getFont(resources, resourceFontCinzelMedium);
-    infoFont = resources_getFont(resources, resourceFontJetBrainsMonoRegular);
 
     displayField_setTexture(menu->titlebar, titleBoardTexture, sfFalse);
     displayField_setTextureRect(menu->titlebar, MENU_TITLE_RECT);
     displayField_setTextFont(menu->titlebar, titleFont);
-
-    displayField_setTextFont(menu->info, infoFont);
 
     settingsMenu_setupButtonTexture(menu->sound, buttonTexture);
     settingsMenu_setupButtonTexture(menu->fullscreen, buttonTexture);
@@ -168,8 +162,6 @@ static void settingsMenu_setTexts(settingsMenu* menu)
 
 static void settingsMenu_updateTexts(settingsMenu* menu)
 {
-    char infoText[256];
-
     if (menu->data.soundEnabled)
         button_setTextString(menu->sound, "Sound: ON");
     else
@@ -179,20 +171,6 @@ static void settingsMenu_updateTexts(settingsMenu* menu)
         button_setTextString(menu->fullscreen, "Fullscreen: ON");
     else
         button_setTextString(menu->fullscreen, "Fullscreen: OFF");
-
-    snprintf(
-        infoText,
-        sizeof(infoText),
-        "Current settings:\n"
-        "Sound: %s\n"
-        "Fullscreen: %s\n\n"
-        "Changing Sound or Fullscreen immediately\n"
-        "requests an apply with the full SettingsData.",
-        menu->data.soundEnabled ? "ON" : "OFF",
-        menu->data.fullscreenEnabled ? "ON" : "OFF"
-    );
-
-    displayField_setTextString(menu->info, infoText);
 }
 
 static void settingsMenu_setStyle(settingsMenu* menu)
@@ -208,19 +186,6 @@ static void settingsMenu_setStyle(settingsMenu* menu)
         displayFieldTextAlignMiddle
     );
     displayField_setOutlineThickness(menu->titlebar, 0.0f);
-
-    displayField_setFillColor(menu->info, (sfColor){20, 20, 20, 180});
-    displayField_setTextColor(menu->info, sfWhite);
-    displayField_setCharacterSize(menu->info, 20);
-    displayField_setLetterSpacing(menu->info, 1.0f);
-    displayField_setTextPadding(menu->info, (sfVector2f){24.0f, 18.0f});
-    displayField_setTextAlignment(
-        menu->info,
-        displayFieldTextAlignLeft,
-        displayFieldTextAlignTop
-    );
-    displayField_setOutlineColor(menu->info, sfWhite);
-    displayField_setOutlineThickness(menu->info, 1.0f);
 
     button_setFillColor(menu->sound, sfWhite);
     button_setFillColor(menu->fullscreen, sfWhite);
@@ -240,11 +205,9 @@ static void settingsMenu_setLayout(settingsMenu* menu, sfVector2i topLeft, sfVec
     float centerX;
 
     sfVector2f titleSize;
-    sfVector2f infoSize;
     sfVector2f buttonSize;
 
     float titleY;
-    float infoY;
     float firstButtonY;
     float buttonGap;
 
@@ -254,21 +217,15 @@ static void settingsMenu_setLayout(settingsMenu* menu, sfVector2i topLeft, sfVec
     centerX = (float)topLeft.x + areaWidth / 2.0f;
 
     titleSize = (sfVector2f){areaWidth * 0.58f, areaHeight * 0.15f};
-    infoSize = (sfVector2f){areaWidth * 0.46f, areaHeight * 0.18f};
     buttonSize = (sfVector2f){areaWidth * 0.32f, areaHeight * 0.085f};
 
-    titleY = (float)topLeft.y + areaHeight * 0.15f;
-    infoY = (float)topLeft.y + areaHeight * 0.32f;
-    firstButtonY = (float)topLeft.y + areaHeight * 0.53f;
+    titleY = (float)topLeft.y + areaHeight * 0.17f;
+    firstButtonY = (float)topLeft.y + areaHeight * 0.40f;
     buttonGap = areaHeight * 0.11f;
 
     displayField_setSize(menu->titlebar, titleSize);
     displayField_setOrigin(menu->titlebar, (sfVector2f){titleSize.x / 2.0f, titleSize.y / 2.0f});
     displayField_setPosition(menu->titlebar, (sfVector2f){centerX, titleY});
-
-    displayField_setSize(menu->info, infoSize);
-    displayField_setOrigin(menu->info, (sfVector2f){infoSize.x / 2.0f, infoSize.y / 2.0f});
-    displayField_setPosition(menu->info, (sfVector2f){centerX, infoY});
 
     button_setSize(menu->sound, buttonSize);
     button_setOrigin(menu->sound, (sfVector2f){buttonSize.x / 2.0f, buttonSize.y / 2.0f});
@@ -308,7 +265,6 @@ settingsMenu* settingsMenu_create(sfVector2i topLeft, sfVector2i bottomRight, co
         return NULL;
 
     menu->titlebar = NULL;
-    menu->info = NULL;
 
     menu->sound = NULL;
     menu->fullscreen = NULL;
@@ -321,7 +277,6 @@ settingsMenu* settingsMenu_create(sfVector2i topLeft, sfVector2i bottomRight, co
     menu->action = settingsMenuActionNone;
 
     menu->titlebar = displayField_create();
-    menu->info = displayField_create();
 
     menu->sound = button_create();
     menu->fullscreen = button_create();
@@ -330,7 +285,6 @@ settingsMenu* settingsMenu_create(sfVector2i topLeft, sfVector2i bottomRight, co
 
     if (
         menu->titlebar == NULL ||
-        menu->info == NULL ||
         menu->sound == NULL ||
         menu->fullscreen == NULL ||
         menu->controls == NULL ||
@@ -357,9 +311,6 @@ void settingsMenu_destroy(settingsMenu* menu)
 
     if (menu->titlebar != NULL)
         displayField_destroy(menu->titlebar);
-
-    if (menu->info != NULL)
-        displayField_destroy(menu->info);
 
     if (menu->sound != NULL)
         button_destroy(menu->sound);
@@ -444,7 +395,6 @@ void settingsMenu_draw(sfRenderWindow* window, const settingsMenu* menu)
         return;
 
     displayField_draw(window, menu->titlebar);
-    displayField_draw(window, menu->info);
 
     button_draw(window, menu->sound);
     button_draw(window, menu->fullscreen);
