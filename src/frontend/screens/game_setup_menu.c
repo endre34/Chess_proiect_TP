@@ -1,7 +1,7 @@
-#include "game_setup_menu.h"
+#include "frontend/screens/game_setup_menu.h"
 
-#include "button.h"
-#include "display_field.h"
+#include "frontend/ui/button.h"
+#include "frontend/ui/display_field.h"
 
 #include <stdlib.h>
 
@@ -24,6 +24,8 @@ struct gameSetupMenu
     sfBool active;
 
     GameSetupMenuAction action;
+
+    GameSetupData data;
 };
 
 static const sfIntRect MENU_BUTTON_IDLE_RECT = {
@@ -56,7 +58,6 @@ static const sfIntRect MENU_TITLE_RECT = {
 
 static void gameSetupMenu_onLocalPvP(void*);
 static void gameSetupMenu_onVsEngine(void*);
-static void gameSetupMenu_onNetworkPvP(void*);
 static void gameSetupMenu_onBack(void*);
 
 static void gameSetupMenu_applyResources(gameSetupMenu*, const Resources*);
@@ -70,17 +71,22 @@ static void gameSetupMenu_setupButtonText(Button*, const sfFont*);
 
 static void gameSetupMenu_onLocalPvP(void* data)
 {
-    ((gameSetupMenu*)data)->action = gameSetupMenuActionLocalPvP;
+    gameSetupMenu* menu;
+
+    menu = data;
+
+    menu->data = gameSetupData_makeLocalPvP(localPvPSetup_getDefault());
+    menu->action = gameSetupMenuActionLocalPvP;
 }
 
 static void gameSetupMenu_onVsEngine(void* data)
 {
-    ((gameSetupMenu*)data)->action = gameSetupMenuActionVsEngine;
-}
+    gameSetupMenu* menu;
 
-static void gameSetupMenu_onNetworkPvP(void* data)
-{
-    ((gameSetupMenu*)data)->action = gameSetupMenuActionNetworkPvP;
+    menu = data;
+
+    menu->data = gameSetupData_makeVsEngine(vsEngineSetup_getDefault());
+    menu->action = gameSetupMenuActionVsEngine;
 }
 
 static void gameSetupMenu_onBack(void* data)
@@ -129,12 +135,10 @@ static void gameSetupMenu_applyResources(gameSetupMenu* menu, const Resources* r
 
     gameSetupMenu_setupButtonTexture(menu->localPvP, buttonTexture);
     gameSetupMenu_setupButtonTexture(menu->vsEngine, buttonTexture);
-    gameSetupMenu_setupButtonTexture(menu->networkPvP, buttonTexture);
     gameSetupMenu_setupButtonTexture(menu->back, buttonTexture);
 
     gameSetupMenu_setupButtonText(menu->localPvP, buttonFont);
     gameSetupMenu_setupButtonText(menu->vsEngine, buttonFont);
-    gameSetupMenu_setupButtonText(menu->networkPvP, buttonFont);
     gameSetupMenu_setupButtonText(menu->back, buttonFont);
 }
 
@@ -150,7 +154,6 @@ static void gameSetupMenu_setTexts(gameSetupMenu* menu)
 
     button_setTextString(menu->localPvP, "Local PvP");
     button_setTextString(menu->vsEngine, "Vs Engine");
-    button_setTextString(menu->networkPvP, "Network PvP");
     button_setTextString(menu->back, "Back");
 }
 
@@ -183,12 +186,10 @@ static void gameSetupMenu_setStyle(gameSetupMenu* menu)
 
     button_setFillColor(menu->localPvP, sfWhite);
     button_setFillColor(menu->vsEngine, sfWhite);
-    button_setFillColor(menu->networkPvP, sfWhite);
     button_setFillColor(menu->back, sfWhite);
 
     button_setOutlineThickness(menu->localPvP, 0.0f);
     button_setOutlineThickness(menu->vsEngine, 0.0f);
-    button_setOutlineThickness(menu->networkPvP, 0.0f);
     button_setOutlineThickness(menu->back, 0.0f);
 }
 
@@ -237,10 +238,6 @@ static void gameSetupMenu_setLayout(gameSetupMenu* menu, sfVector2i topLeft, sfV
     button_setOrigin(menu->vsEngine, (sfVector2f){buttonSize.x / 2.0f, buttonSize.y / 2.0f});
     button_setPosition(menu->vsEngine, (sfVector2f){centerX, firstButtonY + buttonGap});
 
-    button_setSize(menu->networkPvP, buttonSize);
-    button_setOrigin(menu->networkPvP, (sfVector2f){buttonSize.x / 2.0f, buttonSize.y / 2.0f});
-    button_setPosition(menu->networkPvP, (sfVector2f){centerX, firstButtonY + 2.0f * buttonGap});
-
     button_setSize(menu->back, buttonSize);
     button_setOrigin(menu->back, (sfVector2f){buttonSize.x / 2.0f, buttonSize.y / 2.0f});
     button_setPosition(menu->back, (sfVector2f){centerX, firstButtonY + 3.0f * buttonGap});
@@ -250,7 +247,6 @@ static void gameSetupMenu_setActions(gameSetupMenu* menu)
 {
     button_setAction(menu->localPvP, gameSetupMenu_onLocalPvP, menu);
     button_setAction(menu->vsEngine, gameSetupMenu_onVsEngine, menu);
-    button_setAction(menu->networkPvP, gameSetupMenu_onNetworkPvP, menu);
     button_setAction(menu->back, gameSetupMenu_onBack, menu);
 }
 
@@ -271,18 +267,18 @@ gameSetupMenu* gameSetupMenu_create(sfVector2i topLeft, sfVector2i bottomRight, 
 
     menu->localPvP = NULL;
     menu->vsEngine = NULL;
-    menu->networkPvP = NULL;
     menu->back = NULL;
 
     menu->active = sfTrue;
     menu->action = gameSetupMenuActionNone;
+
+    menu->data = gameSetupData_getDefault();
 
     menu->titlebar = displayField_create();
     menu->info = displayField_create();
 
     menu->localPvP = button_create();
     menu->vsEngine = button_create();
-    menu->networkPvP = button_create();
     menu->back = button_create();
 
     if (
@@ -290,7 +286,6 @@ gameSetupMenu* gameSetupMenu_create(sfVector2i topLeft, sfVector2i bottomRight, 
         menu->info == NULL ||
         menu->localPvP == NULL ||
         menu->vsEngine == NULL ||
-        menu->networkPvP == NULL ||
         menu->back == NULL
     )
     {
@@ -324,9 +319,6 @@ void gameSetupMenu_destroy(gameSetupMenu* menu)
     if (menu->vsEngine != NULL)
         button_destroy(menu->vsEngine);
 
-    if (menu->networkPvP != NULL)
-        button_destroy(menu->networkPvP);
-
     if (menu->back != NULL)
         button_destroy(menu->back);
 
@@ -343,7 +335,6 @@ void gameSetupMenu_updateMouse(gameSetupMenu* menu, const Mouse* mouse)
 
     button_updateMouse(menu->localPvP, mouse);
     button_updateMouse(menu->vsEngine, mouse);
-    button_updateMouse(menu->networkPvP, mouse);
     button_updateMouse(menu->back, mouse);
 }
 
@@ -384,6 +375,14 @@ GameSetupMenuAction gameSetupMenu_consumeAction(gameSetupMenu* menu)
     return action;
 }
 
+GameSetupData gameSetupMenu_getData(const gameSetupMenu* menu)
+{
+    if (menu == NULL)
+        return gameSetupData_getDefault();
+
+    return menu->data;
+}
+
 void gameSetupMenu_draw(sfRenderWindow* window, const gameSetupMenu* menu)
 {
     if (window == NULL || menu == NULL)
@@ -397,6 +396,5 @@ void gameSetupMenu_draw(sfRenderWindow* window, const gameSetupMenu* menu)
 
     button_draw(window, menu->localPvP);
     button_draw(window, menu->vsEngine);
-    button_draw(window, menu->networkPvP);
     button_draw(window, menu->back);
 }

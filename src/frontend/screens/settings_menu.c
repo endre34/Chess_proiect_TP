@@ -1,9 +1,10 @@
-#include "settings_menu.h"
+#include "frontend/screens/settings_menu.h"
 
-#include "button.h"
-#include "display_field.h"
+#include "frontend/ui/button.h"
+#include "frontend/ui/display_field.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #define MENU_BUTTON_TEXTURE_WIDTH 916
 #define MENU_BUTTON_TEXTURE_HEIGHT 240
@@ -20,6 +21,8 @@ struct settingsMenu
     Button* fullscreen;
     Button* controls;
     Button* back;
+
+    SettingsData data;
 
     sfBool active;
 
@@ -61,6 +64,7 @@ static void settingsMenu_onBack(void*);
 
 static void settingsMenu_applyResources(settingsMenu*, const Resources*);
 static void settingsMenu_setTexts(settingsMenu*);
+static void settingsMenu_updateTexts(settingsMenu*);
 static void settingsMenu_setStyle(settingsMenu*);
 static void settingsMenu_setLayout(settingsMenu*, sfVector2i, sfVector2i);
 static void settingsMenu_setActions(settingsMenu*);
@@ -70,12 +74,26 @@ static void settingsMenu_setupButtonText(Button*, const sfFont*);
 
 static void settingsMenu_onSound(void* data)
 {
-    ((settingsMenu*)data)->action = settingsMenuActionToggleSound;
+    settingsMenu* menu;
+
+    menu = data;
+
+    menu->data.soundEnabled = !menu->data.soundEnabled;
+    menu->action = settingsMenuActionApply;
+
+    settingsMenu_updateTexts(menu);
 }
 
 static void settingsMenu_onFullscreen(void* data)
 {
-    ((settingsMenu*)data)->action = settingsMenuActionToggleFullscreen;
+    settingsMenu* menu;
+
+    menu = data;
+
+    menu->data.fullscreenEnabled = !menu->data.fullscreenEnabled;
+    menu->action = settingsMenuActionApply;
+
+    settingsMenu_updateTexts(menu);
 }
 
 static void settingsMenu_onControls(void* data)
@@ -142,16 +160,39 @@ static void settingsMenu_setTexts(settingsMenu* menu)
 {
     displayField_setTextString(menu->titlebar, "SETTINGS");
 
-    displayField_setTextString(
-        menu->info,
-        "Settings actions are reported upward.\n"
-        "The upper layer decides what each setting changes."
-    );
-
-    button_setTextString(menu->sound, "Sound");
-    button_setTextString(menu->fullscreen, "Fullscreen");
     button_setTextString(menu->controls, "Controls");
     button_setTextString(menu->back, "Back");
+
+    settingsMenu_updateTexts(menu);
+}
+
+static void settingsMenu_updateTexts(settingsMenu* menu)
+{
+    char infoText[256];
+
+    if (menu->data.soundEnabled)
+        button_setTextString(menu->sound, "Sound: ON");
+    else
+        button_setTextString(menu->sound, "Sound: OFF");
+
+    if (menu->data.fullscreenEnabled)
+        button_setTextString(menu->fullscreen, "Fullscreen: ON");
+    else
+        button_setTextString(menu->fullscreen, "Fullscreen: OFF");
+
+    snprintf(
+        infoText,
+        sizeof(infoText),
+        "Current settings:\n"
+        "Sound: %s\n"
+        "Fullscreen: %s\n\n"
+        "Changing Sound or Fullscreen immediately\n"
+        "requests an apply with the full SettingsData.",
+        menu->data.soundEnabled ? "ON" : "OFF",
+        menu->data.fullscreenEnabled ? "ON" : "OFF"
+    );
+
+    displayField_setTextString(menu->info, infoText);
 }
 
 static void settingsMenu_setStyle(settingsMenu* menu)
@@ -213,12 +254,12 @@ static void settingsMenu_setLayout(settingsMenu* menu, sfVector2i topLeft, sfVec
     centerX = (float)topLeft.x + areaWidth / 2.0f;
 
     titleSize = (sfVector2f){areaWidth * 0.58f, areaHeight * 0.15f};
-    infoSize = (sfVector2f){areaWidth * 0.46f, areaHeight * 0.16f};
+    infoSize = (sfVector2f){areaWidth * 0.46f, areaHeight * 0.18f};
     buttonSize = (sfVector2f){areaWidth * 0.32f, areaHeight * 0.085f};
 
     titleY = (float)topLeft.y + areaHeight * 0.15f;
-    infoY = (float)topLeft.y + areaHeight * 0.31f;
-    firstButtonY = (float)topLeft.y + areaHeight * 0.50f;
+    infoY = (float)topLeft.y + areaHeight * 0.32f;
+    firstButtonY = (float)topLeft.y + areaHeight * 0.53f;
     buttonGap = areaHeight * 0.11f;
 
     displayField_setSize(menu->titlebar, titleSize);
@@ -273,6 +314,8 @@ settingsMenu* settingsMenu_create(sfVector2i topLeft, sfVector2i bottomRight, co
     menu->fullscreen = NULL;
     menu->controls = NULL;
     menu->back = NULL;
+
+    menu->data = settingsData_getDefault();
 
     menu->active = sfTrue;
     menu->action = settingsMenuActionNone;
@@ -382,6 +425,14 @@ SettingsMenuAction settingsMenu_consumeAction(settingsMenu* menu)
     menu->action = settingsMenuActionNone;
 
     return action;
+}
+
+SettingsData settingsMenu_getData(const settingsMenu* menu)
+{
+    if (menu == NULL)
+        return settingsData_getDefault();
+
+    return menu->data;
 }
 
 void settingsMenu_draw(sfRenderWindow* window, const settingsMenu* menu)

@@ -3,9 +3,10 @@
 
 #include <SFML/Graphics.h>
 
-#include "menus.h"
-#include "mouse.h"
-#include "resources.h"
+#include "frontend/screens/menus.h"
+#include "input/mouse.h"
+#include "resources/resources.h"
+#include "frontend/data/screen_data.h"
 
 typedef enum GameSetupMenuAction
 {
@@ -13,7 +14,6 @@ typedef enum GameSetupMenuAction
 
     gameSetupMenuActionLocalPvP,
     gameSetupMenuActionVsEngine,
-    gameSetupMenuActionNetworkPvP,
     gameSetupMenuActionBack
 
 } GameSetupMenuAction;
@@ -31,6 +31,8 @@ sfBool gameSetupMenu_isActive(const gameSetupMenu*);
 
 GameSetupMenuAction gameSetupMenu_getAction(const gameSetupMenu*);
 GameSetupMenuAction gameSetupMenu_consumeAction(gameSetupMenu*);
+
+GameSetupData gameSetupMenu_getData(const gameSetupMenu*);
 
 /* Utility */
 void gameSetupMenu_draw(sfRenderWindow*, const gameSetupMenu*);

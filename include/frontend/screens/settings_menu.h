@@ -3,16 +3,16 @@
 
 #include <SFML/Graphics.h>
 
-#include "menus.h"
-#include "mouse.h"
-#include "resources.h"
+#include "frontend/screens/menus.h"
+#include "input/mouse.h"
+#include "resources/resources.h"
+#include "frontend/data/screen_data.h"
 
 typedef enum SettingsMenuAction
 {
     settingsMenuActionNone,
 
-    settingsMenuActionToggleSound,
-    settingsMenuActionToggleFullscreen,
+    settingsMenuActionApply,
     settingsMenuActionControls,
     settingsMenuActionBack
 
@@ -31,6 +31,8 @@ sfBool settingsMenu_isActive(const settingsMenu*);
 
 SettingsMenuAction settingsMenu_getAction(const settingsMenu*);
 SettingsMenuAction settingsMenu_consumeAction(settingsMenu*);
+
+SettingsData settingsMenu_getData(const settingsMenu*);
 
 /* Utility */
 void settingsMenu_draw(sfRenderWindow*, const settingsMenu*);

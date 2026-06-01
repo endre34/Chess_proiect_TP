@@ -3,9 +3,9 @@
 
 #include <SFML/Graphics.h>
 
-#include "menus.h"
-#include "mouse.h"
-#include "resources.h"
+#include "frontend/screens/menus.h"
+#include "input/mouse.h"
+#include "resources/resources.h"
 
 typedef enum MainMenuAction
 {

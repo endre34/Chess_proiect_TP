@@ -3,8 +3,8 @@
 
 #include <SFML/Graphics.h>
 
-#include "ui_elements.h"
-#include "mouse.h"
+#include "frontend/ui/ui_elements.h"
+#include "input/mouse.h"
 
 typedef void(*buttonAction)(void*);
 

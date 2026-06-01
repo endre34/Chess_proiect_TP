@@ -1,7 +1,7 @@
-#include "credits_menu.h"
+#include "frontend/screens/credits_menu.h"
 
-#include "button.h"
-#include "display_field.h"
+#include "frontend/ui/button.h"
+#include "frontend/ui/display_field.h"
 
 #include <stdlib.h>
 
