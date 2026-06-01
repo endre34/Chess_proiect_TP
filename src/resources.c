@@ -65,13 +65,28 @@ static void resources_clear(Resources* resources)
 }
 
 
+static sfTexture* resources_loadSmoothTexture(const char* path)
+{
+    sfTexture* texture;
+
+    texture = sfTexture_createFromFile(path, NULL);
+
+    if (texture == NULL)
+        return NULL;
+
+    sfTexture_setSmooth(texture, sfTrue);
+
+    return texture;
+}
+
+
 static sfBool resources_loadTextures(Resources* resources)
 {
     int i;
 
     for (i = 0; i < resourceTextureCount; i++)
     {
-        resources->textures[i] = sfTexture_createFromFile(texturePaths[i], NULL);
+        resources->textures[i] = resources_loadSmoothTexture(texturePaths[i]);
 
         if (resources->textures[i] == NULL)
             return sfFalse;
@@ -87,7 +102,7 @@ static sfBool resources_loadIcons(Resources* resources)
 
     for (i = 0; i < resourceIconCount; i++)
     {
-        resources->icons[i] = sfTexture_createFromFile(iconPaths[i], NULL);
+        resources->icons[i] = resources_loadSmoothTexture(iconPaths[i]);
 
         if (resources->icons[i] == NULL)
             return sfFalse;
