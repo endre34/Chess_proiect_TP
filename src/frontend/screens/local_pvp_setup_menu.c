@@ -9,6 +9,9 @@
 #define MENU_BUTTON_TEXTURE_WIDTH 894
 #define MENU_BUTTON_TEXTURE_HEIGHT 234
 
+#define MENU_TEXT_FIELD_TEXTURE_WIDTH 1790
+#define MENU_TEXT_FIELD_TEXTURE_HEIGHT 470
+
 #define MENU_TITLE_TEXTURE_WIDTH 1596
 #define MENU_TITLE_TEXTURE_HEIGHT 316
 
@@ -55,6 +58,27 @@ static const sfIntRect MENU_BUTTON_PRESS_RECT = {
     MENU_BUTTON_TEXTURE_HEIGHT
 };
 
+static const sfIntRect MENU_TEXT_FIELD_IDLE_RECT = {
+    0,
+    0,
+    MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    MENU_TEXT_FIELD_TEXTURE_HEIGHT
+};
+
+static const sfIntRect MENU_TEXT_FIELD_HOVER_RECT = {
+    MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    0,
+    MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    MENU_TEXT_FIELD_TEXTURE_HEIGHT
+};
+
+static const sfIntRect MENU_TEXT_FIELD_SELECTED_RECT = {
+    2 * MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    0,
+    MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    MENU_TEXT_FIELD_TEXTURE_HEIGHT
+};
+
 static const sfIntRect MENU_TITLE_RECT = {
     0,
     0,
@@ -73,7 +97,7 @@ static void localPvPSetupMenu_setActions(localPvPSetupMenu*);
 
 static void localPvPSetupMenu_setupButtonTexture(Button*, const sfTexture*);
 static void localPvPSetupMenu_setupButtonText(Button*, const sfFont*);
-static void localPvPSetupMenu_setupTextField(TextField*, const sfFont*);
+static void localPvPSetupMenu_setupTextField(TextField*, const sfTexture*, const sfFont*);
 static void localPvPSetupMenu_setupPlainText(DisplayField*, const sfFont*, unsigned int, sfColor);
 
 static sfBool localPvPSetupMenu_parseUnsigned(const char*, unsigned int*);
@@ -111,16 +135,24 @@ static void localPvPSetupMenu_setupButtonText(Button* button, const sfFont* font
     button_setLetterSpacing(button, 1.3f);
 }
 
-static void localPvPSetupMenu_setupTextField(TextField* textField, const sfFont* font)
+static void localPvPSetupMenu_setupTextField(TextField* textField, const sfTexture* texture, const sfFont* font)
 {
+    textField_setTexture(textField, texture, sfFalse);
+
+    textField_setTextureRect_onIdle(textField, MENU_TEXT_FIELD_IDLE_RECT);
+    textField_setTextureRect_onHover(textField, MENU_TEXT_FIELD_HOVER_RECT);
+    textField_setTextureRect_onSelected(textField, MENU_TEXT_FIELD_SELECTED_RECT);
+
     textField_setTextFont(textField, font);
     textField_setCharacterSize(textField, 32);
     textField_setLetterSpacing(textField, 1.0f);
     textField_setTextColor(textField, sfBlack);
-    textField_setTextPadding(textField, (sfVector2f){12.0f, 0.0f});
+    textField_setTextPadding(textField, (sfVector2f){24.0f, 0.0f});
+
     textField_setFillColor(textField, sfWhite);
-    textField_setOutlineColor(textField, sfBlack);
-    textField_setOutlineThickness(textField, 2.0f);
+
+    textField_setOutlineThickness(textField, 0.0f);
+    textField_setSelectedOutlineThickness(textField, 0.0f);
 }
 
 static void localPvPSetupMenu_setupPlainText(DisplayField* field, const sfFont* font, unsigned int size, sfColor color)
@@ -142,6 +174,7 @@ static void localPvPSetupMenu_setupPlainText(DisplayField* field, const sfFont* 
 static void localPvPSetupMenu_applyResources(localPvPSetupMenu* menu, const Resources* resources)
 {
     const sfTexture* buttonTexture;
+    const sfTexture* textFieldTexture;
     const sfTexture* titleBoardTexture;
 
     const sfFont* titleFont;
@@ -149,6 +182,7 @@ static void localPvPSetupMenu_applyResources(localPvPSetupMenu* menu, const Reso
     const sfFont* plainFont;
 
     buttonTexture = resources_getTexture(resources, resourceTextureButtons);
+    textFieldTexture = resources_getTexture(resources, resourceTextureTextFields);
     titleBoardTexture = resources_getTexture(resources, resourceTextureTitleBoard);
 
     titleFont = resources_getFont(resources, resourceFontCinzelSemiBold);
@@ -164,8 +198,8 @@ static void localPvPSetupMenu_applyResources(localPvPSetupMenu* menu, const Reso
     localPvPSetupMenu_setupPlainText(menu->noticeLabel, plainFont, 18, sfWhite);
     localPvPSetupMenu_setupPlainText(menu->errorLabel, plainFont, 20, sfRed);
 
-    localPvPSetupMenu_setupTextField(menu->startingMinutesField, plainFont);
-    localPvPSetupMenu_setupTextField(menu->incrementSecondsField, plainFont);
+    localPvPSetupMenu_setupTextField(menu->startingMinutesField, textFieldTexture, plainFont);
+    localPvPSetupMenu_setupTextField(menu->incrementSecondsField, textFieldTexture, plainFont);
 
     localPvPSetupMenu_setupButtonTexture(menu->play, buttonTexture);
     localPvPSetupMenu_setupButtonTexture(menu->back, buttonTexture);

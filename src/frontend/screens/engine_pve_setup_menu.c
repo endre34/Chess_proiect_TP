@@ -9,6 +9,9 @@
 #define MENU_BUTTON_TEXTURE_WIDTH 894
 #define MENU_BUTTON_TEXTURE_HEIGHT 234
 
+#define MENU_TEXT_FIELD_TEXTURE_WIDTH 1790
+#define MENU_TEXT_FIELD_TEXTURE_HEIGHT 470
+
 #define MENU_TITLE_TEXTURE_WIDTH 1596
 #define MENU_TITLE_TEXTURE_HEIGHT 316
 
@@ -55,6 +58,27 @@ static const sfIntRect MENU_BUTTON_PRESS_RECT = {
     MENU_BUTTON_TEXTURE_HEIGHT
 };
 
+static const sfIntRect MENU_TEXT_FIELD_IDLE_RECT = {
+    0,
+    0,
+    MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    MENU_TEXT_FIELD_TEXTURE_HEIGHT
+};
+
+static const sfIntRect MENU_TEXT_FIELD_HOVER_RECT = {
+    MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    0,
+    MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    MENU_TEXT_FIELD_TEXTURE_HEIGHT
+};
+
+static const sfIntRect MENU_TEXT_FIELD_SELECTED_RECT = {
+    2 * MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    0,
+    MENU_TEXT_FIELD_TEXTURE_WIDTH,
+    MENU_TEXT_FIELD_TEXTURE_HEIGHT
+};
+
 static const sfIntRect MENU_TITLE_RECT = {
     0,
     0,
@@ -75,7 +99,7 @@ static void enginePvESetupMenu_setActions(enginePvESetupMenu*);
 
 static void enginePvESetupMenu_setupButtonTexture(Button*, const sfTexture*);
 static void enginePvESetupMenu_setupButtonText(Button*, const sfFont*);
-static void enginePvESetupMenu_setupTextField(TextField*, const sfFont*);
+static void enginePvESetupMenu_setupTextField(TextField*, const sfTexture*, const sfFont*);
 static void enginePvESetupMenu_setupPlainText(DisplayField*, const sfFont*, unsigned int, sfColor);
 
 static sfBool enginePvESetupMenu_parseUnsigned(const char*, unsigned int*);
@@ -129,16 +153,24 @@ static void enginePvESetupMenu_setupButtonText(Button* button, const sfFont* fon
     button_setLetterSpacing(button, 1.2f);
 }
 
-static void enginePvESetupMenu_setupTextField(TextField* textField, const sfFont* font)
+static void enginePvESetupMenu_setupTextField(TextField* textField, const sfTexture* texture, const sfFont* font)
 {
+    textField_setTexture(textField, texture, sfFalse);
+
+    textField_setTextureRect_onIdle(textField, MENU_TEXT_FIELD_IDLE_RECT);
+    textField_setTextureRect_onHover(textField, MENU_TEXT_FIELD_HOVER_RECT);
+    textField_setTextureRect_onSelected(textField, MENU_TEXT_FIELD_SELECTED_RECT);
+
     textField_setTextFont(textField, font);
     textField_setCharacterSize(textField, 32);
     textField_setLetterSpacing(textField, 1.0f);
     textField_setTextColor(textField, sfBlack);
-    textField_setTextPadding(textField, (sfVector2f){12.0f, 0.0f});
+    textField_setTextPadding(textField, (sfVector2f){24.0f, 0.0f});
+
     textField_setFillColor(textField, sfWhite);
-    textField_setOutlineColor(textField, sfBlack);
-    textField_setOutlineThickness(textField, 2.0f);
+
+    textField_setOutlineThickness(textField, 0.0f);
+    textField_setSelectedOutlineThickness(textField, 0.0f);
 }
 
 static void enginePvESetupMenu_setupPlainText(DisplayField* field, const sfFont* font, unsigned int size, sfColor color)
@@ -160,6 +192,7 @@ static void enginePvESetupMenu_setupPlainText(DisplayField* field, const sfFont*
 static void enginePvESetupMenu_applyResources(enginePvESetupMenu* menu, const Resources* resources)
 {
     const sfTexture* buttonTexture;
+    const sfTexture* textFieldTexture;
     const sfTexture* titleBoardTexture;
 
     const sfFont* titleFont;
@@ -167,6 +200,7 @@ static void enginePvESetupMenu_applyResources(enginePvESetupMenu* menu, const Re
     const sfFont* plainFont;
 
     buttonTexture = resources_getTexture(resources, resourceTextureButtons);
+    textFieldTexture = resources_getTexture(resources, resourceTextureTextFields);
     titleBoardTexture = resources_getTexture(resources, resourceTextureTitleBoard);
 
     titleFont = resources_getFont(resources, resourceFontCinzelSemiBold);
@@ -190,7 +224,7 @@ static void enginePvESetupMenu_applyResources(enginePvESetupMenu* menu, const Re
     enginePvESetupMenu_setupButtonText(menu->play, buttonFont);
     enginePvESetupMenu_setupButtonText(menu->back, buttonFont);
 
-    enginePvESetupMenu_setupTextField(menu->engineLevelField, plainFont);
+    enginePvESetupMenu_setupTextField(menu->engineLevelField, textFieldTexture, plainFont);
 }
 
 static void enginePvESetupMenu_setTexts(enginePvESetupMenu* menu)

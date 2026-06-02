@@ -559,6 +559,7 @@ static void test_resources(TestResults* results, const Resources* resources)
     test_resourceTexture(results, resources, resourceTextureButtons, "buttons texture loaded");
     test_resourceTexture(results, resources, resourceTexturePieces, "pieces texture loaded");
     test_resourceTexture(results, resources, resourceTextureSideboard, "sideboard texture loaded");
+    test_resourceTexture(results, resources, resourceTextureTextFields, "text fields texture loaded");
     test_resourceTexture(results, resources, resourceTextureTimeBoard, "time board texture loaded");
     test_resourceTexture(results, resources, resourceTextureTitleBoard, "title board texture loaded");
 

@@ -14,6 +14,7 @@ typedef enum ResourceTextureId
     resourceTextureButtons,
     resourceTexturePieces,
     resourceTextureSideboard,
+    resourceTextureTextFields,
     resourceTextureTimeBoard,
     resourceTextureTitleBoard,
 

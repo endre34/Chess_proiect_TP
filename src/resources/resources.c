@@ -18,6 +18,7 @@ static const char* const texturePaths[resourceTextureCount] =
     [resourceTextureButtons] = "media/textures/buttons.png",
     [resourceTexturePieces] = "media/textures/pieces.png",
     [resourceTextureSideboard] = "media/textures/sideboard.png",
+    [resourceTextureTextFields] = "media/textures/text_fields.png",
     [resourceTextureTimeBoard] = "media/textures/time_board.png",
     [resourceTextureTitleBoard] = "media/textures/title_board.png"
 };
