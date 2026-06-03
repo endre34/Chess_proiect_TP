@@ -15,7 +15,7 @@
 #define MENU_TITLE_TEXTURE_WIDTH 1596
 #define MENU_TITLE_TEXTURE_HEIGHT 316
 
-struct localPvPSetupMenu
+struct localPvpSetupMenu
 {
     DisplayField* titlebar;
 
@@ -34,7 +34,7 @@ struct localPvPSetupMenu
 
     sfBool active;
 
-    LocalPvPSetupMenuAction action;
+    localPvpSetupMenuAction action;
 };
 
 static const sfIntRect MENU_BUTTON_IDLE_RECT = {
@@ -86,39 +86,39 @@ static const sfIntRect MENU_TITLE_RECT = {
     MENU_TITLE_TEXTURE_HEIGHT
 };
 
-static void localPvPSetupMenu_onPlay(void*);
-static void localPvPSetupMenu_onBack(void*);
+static void localPvpSetupMenu_onPlay(void*);
+static void localPvpSetupMenu_onBack(void*);
 
-static void localPvPSetupMenu_applyResources(localPvPSetupMenu*, const Resources*);
-static void localPvPSetupMenu_setTexts(localPvPSetupMenu*);
-static void localPvPSetupMenu_setStyle(localPvPSetupMenu*);
-static void localPvPSetupMenu_setLayout(localPvPSetupMenu*, sfVector2i, sfVector2i);
-static void localPvPSetupMenu_setActions(localPvPSetupMenu*);
+static void localPvpSetupMenu_applyResources(localPvpSetupMenu*, const Resources*);
+static void localPvpSetupMenu_setTexts(localPvpSetupMenu*);
+static void localPvpSetupMenu_setStyle(localPvpSetupMenu*);
+static void localPvpSetupMenu_setLayout(localPvpSetupMenu*, sfVector2i, sfVector2i);
+static void localPvpSetupMenu_setActions(localPvpSetupMenu*);
 
-static void localPvPSetupMenu_setupButtonTexture(Button*, const sfTexture*);
-static void localPvPSetupMenu_setupButtonText(Button*, const sfFont*);
-static void localPvPSetupMenu_setupTextField(TextField*, const sfTexture*, const sfFont*);
-static void localPvPSetupMenu_setupPlainText(DisplayField*, const sfFont*, unsigned int, sfColor);
+static void localPvpSetupMenu_setupButtonTexture(Button*, const sfTexture*);
+static void localPvpSetupMenu_setupButtonText(Button*, const sfFont*);
+static void localPvpSetupMenu_setupTextField(TextField*, const sfTexture*, const sfFont*);
+static void localPvpSetupMenu_setupPlainText(DisplayField*, const sfFont*, unsigned int, sfColor);
 
-static sfBool localPvPSetupMenu_parseUnsigned(const char*, unsigned int*);
-static sfBool localPvPSetupMenu_validate(localPvPSetupMenu*);
+static sfBool localPvpSetupMenu_parseUnsigned(const char*, unsigned int*);
+static sfBool localPvpSetupMenu_validate(localPvpSetupMenu*);
 
-static void localPvPSetupMenu_onPlay(void* data)
+static void localPvpSetupMenu_onPlay(void* data)
 {
-    localPvPSetupMenu* menu;
+    localPvpSetupMenu* menu;
 
     menu = data;
 
-    if (localPvPSetupMenu_validate(menu))
-        menu->action = localPvPSetupMenuActionStart;
+    if (localPvpSetupMenu_validate(menu))
+        menu->action = localPvpSetupMenuActionStart;
 }
 
-static void localPvPSetupMenu_onBack(void* data)
+static void localPvpSetupMenu_onBack(void* data)
 {
-    ((localPvPSetupMenu*)data)->action = localPvPSetupMenuActionBack;
+    ((localPvpSetupMenu*)data)->action = localPvpSetupMenuActionBack;
 }
 
-static void localPvPSetupMenu_setupButtonTexture(Button* button, const sfTexture* texture)
+static void localPvpSetupMenu_setupButtonTexture(Button* button, const sfTexture* texture)
 {
     button_setTexture(button, texture, sfFalse);
 
@@ -127,7 +127,7 @@ static void localPvPSetupMenu_setupButtonTexture(Button* button, const sfTexture
     button_setTextureRect_onPress(button, MENU_BUTTON_PRESS_RECT);
 }
 
-static void localPvPSetupMenu_setupButtonText(Button* button, const sfFont* font)
+static void localPvpSetupMenu_setupButtonText(Button* button, const sfFont* font)
 {
     button_setTextFont(button, font);
     button_setTextColor(button, sfWhite);
@@ -135,7 +135,7 @@ static void localPvPSetupMenu_setupButtonText(Button* button, const sfFont* font
     button_setLetterSpacing(button, 1.3f);
 }
 
-static void localPvPSetupMenu_setupTextField(TextField* textField, const sfTexture* texture, const sfFont* font)
+static void localPvpSetupMenu_setupTextField(TextField* textField, const sfTexture* texture, const sfFont* font)
 {
     textField_setTexture(textField, texture, sfFalse);
 
@@ -155,7 +155,7 @@ static void localPvPSetupMenu_setupTextField(TextField* textField, const sfTextu
     textField_setSelectedOutlineThickness(textField, 0.0f);
 }
 
-static void localPvPSetupMenu_setupPlainText(DisplayField* field, const sfFont* font, unsigned int size, sfColor color)
+static void localPvpSetupMenu_setupPlainText(DisplayField* field, const sfFont* font, unsigned int size, sfColor color)
 {
     displayField_setTextFont(field, font);
     displayField_setTextColor(field, color);
@@ -171,7 +171,7 @@ static void localPvPSetupMenu_setupPlainText(DisplayField* field, const sfFont* 
     displayField_setOutlineThickness(field, 0.0f);
 }
 
-static void localPvPSetupMenu_applyResources(localPvPSetupMenu* menu, const Resources* resources)
+static void localPvpSetupMenu_applyResources(localPvpSetupMenu* menu, const Resources* resources)
 {
     const sfTexture* buttonTexture;
     const sfTexture* textFieldTexture;
@@ -193,22 +193,22 @@ static void localPvPSetupMenu_applyResources(localPvPSetupMenu* menu, const Reso
     displayField_setTextureRect(menu->titlebar, MENU_TITLE_RECT);
     displayField_setTextFont(menu->titlebar, titleFont);
 
-    localPvPSetupMenu_setupPlainText(menu->timeLabel, titleFont, 36, sfWhite);
-    localPvPSetupMenu_setupPlainText(menu->plusLabel, titleFont, 42, sfWhite);
-    localPvPSetupMenu_setupPlainText(menu->noticeLabel, plainFont, 18, sfWhite);
-    localPvPSetupMenu_setupPlainText(menu->errorLabel, plainFont, 20, sfRed);
+    localPvpSetupMenu_setupPlainText(menu->timeLabel, titleFont, 36, sfWhite);
+    localPvpSetupMenu_setupPlainText(menu->plusLabel, titleFont, 42, sfWhite);
+    localPvpSetupMenu_setupPlainText(menu->noticeLabel, plainFont, 18, sfWhite);
+    localPvpSetupMenu_setupPlainText(menu->errorLabel, plainFont, 20, sfRed);
 
-    localPvPSetupMenu_setupTextField(menu->startingMinutesField, textFieldTexture, plainFont);
-    localPvPSetupMenu_setupTextField(menu->incrementSecondsField, textFieldTexture, plainFont);
+    localPvpSetupMenu_setupTextField(menu->startingMinutesField, textFieldTexture, plainFont);
+    localPvpSetupMenu_setupTextField(menu->incrementSecondsField, textFieldTexture, plainFont);
 
-    localPvPSetupMenu_setupButtonTexture(menu->play, buttonTexture);
-    localPvPSetupMenu_setupButtonTexture(menu->back, buttonTexture);
+    localPvpSetupMenu_setupButtonTexture(menu->play, buttonTexture);
+    localPvpSetupMenu_setupButtonTexture(menu->back, buttonTexture);
 
-    localPvPSetupMenu_setupButtonText(menu->play, buttonFont);
-    localPvPSetupMenu_setupButtonText(menu->back, buttonFont);
+    localPvpSetupMenu_setupButtonText(menu->play, buttonFont);
+    localPvpSetupMenu_setupButtonText(menu->back, buttonFont);
 }
 
-static void localPvPSetupMenu_setTexts(localPvPSetupMenu* menu)
+static void localPvpSetupMenu_setTexts(localPvpSetupMenu* menu)
 {
     displayField_setTextString(menu->titlebar, "LOCAL PVP");
     displayField_setTextString(menu->timeLabel, "TIME");
@@ -223,7 +223,7 @@ static void localPvPSetupMenu_setTexts(localPvPSetupMenu* menu)
     button_setTextString(menu->back, "Back");
 }
 
-static void localPvPSetupMenu_setStyle(localPvPSetupMenu* menu)
+static void localPvpSetupMenu_setStyle(localPvpSetupMenu* menu)
 {
     displayField_setFillColor(menu->titlebar, sfWhite);
     displayField_setTextColor(menu->titlebar, sfWhite);
@@ -244,7 +244,7 @@ static void localPvPSetupMenu_setStyle(localPvPSetupMenu* menu)
     button_setOutlineThickness(menu->back, 0.0f);
 }
 
-static void localPvPSetupMenu_setLayout(localPvPSetupMenu* menu, sfVector2i topLeft, sfVector2i bottomRight)
+static void localPvpSetupMenu_setLayout(localPvpSetupMenu* menu, sfVector2i topLeft, sfVector2i bottomRight)
 {
     float areaWidth;
     float areaHeight;
@@ -334,13 +334,13 @@ static void localPvPSetupMenu_setLayout(localPvPSetupMenu* menu, sfVector2i topL
     displayField_setPosition(menu->errorLabel, (sfVector2f){centerX, errorY});
 }
 
-static void localPvPSetupMenu_setActions(localPvPSetupMenu* menu)
+static void localPvpSetupMenu_setActions(localPvpSetupMenu* menu)
 {
-    button_setAction(menu->play, localPvPSetupMenu_onPlay, menu);
-    button_setAction(menu->back, localPvPSetupMenu_onBack, menu);
+    button_setAction(menu->play, localPvpSetupMenu_onPlay, menu);
+    button_setAction(menu->back, localPvpSetupMenu_onBack, menu);
 }
 
-static sfBool localPvPSetupMenu_parseUnsigned(const char* string, unsigned int* value)
+static sfBool localPvpSetupMenu_parseUnsigned(const char* string, unsigned int* value)
 {
     unsigned int i;
     unsigned int result;
@@ -366,14 +366,14 @@ static sfBool localPvPSetupMenu_parseUnsigned(const char* string, unsigned int* 
     return sfTrue;
 }
 
-static sfBool localPvPSetupMenu_validate(localPvPSetupMenu* menu)
+static sfBool localPvpSetupMenu_validate(localPvpSetupMenu* menu)
 {
     unsigned int startingMinutes;
     unsigned int incrementSeconds;
 
     if (
-        !localPvPSetupMenu_parseUnsigned(textField_getTextString(menu->startingMinutesField), &startingMinutes) ||
-        !localPvPSetupMenu_parseUnsigned(textField_getTextString(menu->incrementSecondsField), &incrementSeconds)
+        !localPvpSetupMenu_parseUnsigned(textField_getTextString(menu->startingMinutesField), &startingMinutes) ||
+        !localPvpSetupMenu_parseUnsigned(textField_getTextString(menu->incrementSecondsField), &incrementSeconds)
     )
     {
         displayField_setTextString(menu->errorLabel, "Only numbers accepted");
@@ -394,14 +394,14 @@ static sfBool localPvPSetupMenu_validate(localPvPSetupMenu* menu)
     return sfTrue;
 }
 
-localPvPSetupMenu* localPvPSetupMenu_create(sfVector2i topLeft, sfVector2i bottomRight, const Resources* resources)
+localPvpSetupMenu* localPvpSetupMenu_create(sfVector2i topLeft, sfVector2i bottomRight, const Resources* resources)
 {
-    localPvPSetupMenu* menu;
+    localPvpSetupMenu* menu;
 
     if (resources == NULL)
         return NULL;
 
-    menu = malloc(sizeof(localPvPSetupMenu));
+    menu = malloc(sizeof(localPvpSetupMenu));
 
     if (menu == NULL)
         return NULL;
@@ -422,7 +422,7 @@ localPvPSetupMenu* localPvPSetupMenu_create(sfVector2i topLeft, sfVector2i botto
     menu->data = localPvPSetup_getDefault();
 
     menu->active = sfTrue;
-    menu->action = localPvPSetupMenuActionNone;
+    menu->action = localPvpSetupMenuActionNone;
 
     menu->titlebar = displayField_create();
 
@@ -449,20 +449,20 @@ localPvPSetupMenu* localPvPSetupMenu_create(sfVector2i topLeft, sfVector2i botto
         menu->back == NULL
     )
     {
-        localPvPSetupMenu_destroy(menu);
+        localPvpSetupMenu_destroy(menu);
         return NULL;
     }
 
-    localPvPSetupMenu_applyResources(menu, resources);
-    localPvPSetupMenu_setTexts(menu);
-    localPvPSetupMenu_setStyle(menu);
-    localPvPSetupMenu_setLayout(menu, topLeft, bottomRight);
-    localPvPSetupMenu_setActions(menu);
+    localPvpSetupMenu_applyResources(menu, resources);
+    localPvpSetupMenu_setTexts(menu);
+    localPvpSetupMenu_setStyle(menu);
+    localPvpSetupMenu_setLayout(menu, topLeft, bottomRight);
+    localPvpSetupMenu_setActions(menu);
 
     return menu;
 }
 
-void localPvPSetupMenu_destroy(localPvPSetupMenu* menu)
+void localPvpSetupMenu_destroy(localPvpSetupMenu* menu)
 {
     if (menu == NULL)
         return;
@@ -497,7 +497,7 @@ void localPvPSetupMenu_destroy(localPvPSetupMenu* menu)
     free(menu);
 }
 
-void localPvPSetupMenu_updateMouse(localPvPSetupMenu* menu, const Mouse* mouse)
+void localPvpSetupMenu_updateMouse(localPvpSetupMenu* menu, const Mouse* mouse)
 {
     sfVector2i position;
 
@@ -535,7 +535,7 @@ void localPvPSetupMenu_updateMouse(localPvPSetupMenu* menu, const Mouse* mouse)
     button_updateMouse(menu->back, mouse);
 }
 
-void localPvPSetupMenu_updateKeyboard(localPvPSetupMenu* menu, const sfEvent* event)
+void localPvpSetupMenu_updateKeyboard(localPvpSetupMenu* menu, const sfEvent* event)
 {
     if (menu == NULL || event == NULL)
         return;
@@ -547,7 +547,7 @@ void localPvPSetupMenu_updateKeyboard(localPvPSetupMenu* menu, const sfEvent* ev
     textField_updateKeyboard(menu->incrementSecondsField, event);
 }
 
-void localPvPSetupMenu_setActive(localPvPSetupMenu* menu, sfBool active)
+void localPvpSetupMenu_setActive(localPvpSetupMenu* menu, sfBool active)
 {
     if (menu == NULL)
         return;
@@ -555,7 +555,7 @@ void localPvPSetupMenu_setActive(localPvPSetupMenu* menu, sfBool active)
     menu->active = active;
 }
 
-sfBool localPvPSetupMenu_isActive(const localPvPSetupMenu* menu)
+sfBool localPvpSetupMenu_isActive(const localPvpSetupMenu* menu)
 {
     if (menu == NULL)
         return sfFalse;
@@ -563,28 +563,28 @@ sfBool localPvPSetupMenu_isActive(const localPvPSetupMenu* menu)
     return menu->active;
 }
 
-LocalPvPSetupMenuAction localPvPSetupMenu_getAction(const localPvPSetupMenu* menu)
+localPvpSetupMenuAction localPvpSetupMenu_getAction(const localPvpSetupMenu* menu)
 {
     if (menu == NULL)
-        return localPvPSetupMenuActionNone;
+        return localPvpSetupMenuActionNone;
 
     return menu->action;
 }
 
-LocalPvPSetupMenuAction localPvPSetupMenu_consumeAction(localPvPSetupMenu* menu)
+localPvpSetupMenuAction localPvpSetupMenu_consumeAction(localPvpSetupMenu* menu)
 {
-    LocalPvPSetupMenuAction action;
+    localPvpSetupMenuAction action;
 
     if (menu == NULL)
-        return localPvPSetupMenuActionNone;
+        return localPvpSetupMenuActionNone;
 
     action = menu->action;
-    menu->action = localPvPSetupMenuActionNone;
+    menu->action = localPvpSetupMenuActionNone;
 
     return action;
 }
 
-LocalPvPSetup localPvPSetupMenu_getData(const localPvPSetupMenu* menu)
+LocalPvPSetup localPvpSetupMenu_getData(const localPvpSetupMenu* menu)
 {
     if (menu == NULL)
         return localPvPSetup_getDefault();
@@ -592,7 +592,7 @@ LocalPvPSetup localPvPSetupMenu_getData(const localPvPSetupMenu* menu)
     return menu->data;
 }
 
-void localPvPSetupMenu_draw(sfRenderWindow* window, const localPvPSetupMenu* menu)
+void localPvpSetupMenu_draw(sfRenderWindow* window, const localPvpSetupMenu* menu)
 {
     if (window == NULL || menu == NULL)
         return;

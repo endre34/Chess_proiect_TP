@@ -7,8 +7,10 @@ typedef struct settingsMenu settingsMenu;
 typedef struct controlsMenu controlsMenu;
 
 typedef struct gameSetupMenu gameSetupMenu;
-typedef struct localPvPSetupMenu localPvPSetupMenu;
-typedef struct enginePvESetupMenu enginePvESetupMenu;
+typedef struct localPvpSetupMenu localPvpSetupMenu;
+typedef struct enginePveSetupMenu enginePveSetupMenu;
+typedef struct gameLocalPvpScreen gameLocalPvpScreen;
+typedef struct gameEnginePveScreen gameEnginePveScreen ;
 
 typedef struct mainGame mainGame;
 typedef struct gameSettingMenu gameSettingMenu;

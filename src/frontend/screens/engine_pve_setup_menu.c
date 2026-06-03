@@ -15,7 +15,7 @@
 #define MENU_TITLE_TEXTURE_WIDTH 1596
 #define MENU_TITLE_TEXTURE_HEIGHT 316
 
-struct enginePvESetupMenu
+struct enginePveSetupMenu
 {
     DisplayField* titlebar;
 
@@ -34,7 +34,7 @@ struct enginePvESetupMenu
 
     sfBool active;
 
-    EnginePvESetupMenuAction action;
+    enginePveSetupMenuAction action;
 };
 
 static const sfIntRect MENU_BUTTON_IDLE_RECT = {
@@ -86,28 +86,28 @@ static const sfIntRect MENU_TITLE_RECT = {
     MENU_TITLE_TEXTURE_HEIGHT
 };
 
-static void enginePvESetupMenu_onColor(void*);
-static void enginePvESetupMenu_onPlay(void*);
-static void enginePvESetupMenu_onBack(void*);
+static void enginePveSetupMenu_onColor(void*);
+static void enginePveSetupMenu_onPlay(void*);
+static void enginePveSetupMenu_onBack(void*);
 
-static void enginePvESetupMenu_applyResources(enginePvESetupMenu*, const Resources*);
-static void enginePvESetupMenu_setTexts(enginePvESetupMenu*);
-static void enginePvESetupMenu_updateColorText(enginePvESetupMenu*);
-static void enginePvESetupMenu_setStyle(enginePvESetupMenu*);
-static void enginePvESetupMenu_setLayout(enginePvESetupMenu*, sfVector2i, sfVector2i);
-static void enginePvESetupMenu_setActions(enginePvESetupMenu*);
+static void enginePveSetupMenu_applyResources(enginePveSetupMenu*, const Resources*);
+static void enginePveSetupMenu_setTexts(enginePveSetupMenu*);
+static void enginePveSetupMenu_updateColorText(enginePveSetupMenu*);
+static void enginePveSetupMenu_setStyle(enginePveSetupMenu*);
+static void enginePveSetupMenu_setLayout(enginePveSetupMenu*, sfVector2i, sfVector2i);
+static void enginePveSetupMenu_setActions(enginePveSetupMenu*);
 
-static void enginePvESetupMenu_setupButtonTexture(Button*, const sfTexture*);
-static void enginePvESetupMenu_setupButtonText(Button*, const sfFont*);
-static void enginePvESetupMenu_setupTextField(TextField*, const sfTexture*, const sfFont*);
-static void enginePvESetupMenu_setupPlainText(DisplayField*, const sfFont*, unsigned int, sfColor);
+static void enginePveSetupMenu_setupButtonTexture(Button*, const sfTexture*);
+static void enginePveSetupMenu_setupButtonText(Button*, const sfFont*);
+static void enginePveSetupMenu_setupTextField(TextField*, const sfTexture*, const sfFont*);
+static void enginePveSetupMenu_setupPlainText(DisplayField*, const sfFont*, unsigned int, sfColor);
 
-static sfBool enginePvESetupMenu_parseUnsigned(const char*, unsigned int*);
-static sfBool enginePvESetupMenu_validate(enginePvESetupMenu*);
+static sfBool enginePveSetupMenu_parseUnsigned(const char*, unsigned int*);
+static sfBool enginePveSetupMenu_validate(enginePveSetupMenu*);
 
-static void enginePvESetupMenu_onColor(void* data)
+static void enginePveSetupMenu_onColor(void* data)
 {
-    enginePvESetupMenu* menu;
+    enginePveSetupMenu* menu;
 
     menu = data;
 
@@ -118,25 +118,25 @@ static void enginePvESetupMenu_onColor(void* data)
     else
         menu->data.playerColor = playerColorWhite;
 
-    enginePvESetupMenu_updateColorText(menu);
+    enginePveSetupMenu_updateColorText(menu);
 }
 
-static void enginePvESetupMenu_onPlay(void* data)
+static void enginePveSetupMenu_onPlay(void* data)
 {
-    enginePvESetupMenu* menu;
+    enginePveSetupMenu* menu;
 
     menu = data;
 
-    if (enginePvESetupMenu_validate(menu))
-        menu->action = enginePvESetupMenuActionStart;
+    if (enginePveSetupMenu_validate(menu))
+        menu->action = enginePveSetupMenuActionStart;
 }
 
-static void enginePvESetupMenu_onBack(void* data)
+static void enginePveSetupMenu_onBack(void* data)
 {
-    ((enginePvESetupMenu*)data)->action = enginePvESetupMenuActionBack;
+    ((enginePveSetupMenu*)data)->action = enginePveSetupMenuActionBack;
 }
 
-static void enginePvESetupMenu_setupButtonTexture(Button* button, const sfTexture* texture)
+static void enginePveSetupMenu_setupButtonTexture(Button* button, const sfTexture* texture)
 {
     button_setTexture(button, texture, sfFalse);
 
@@ -145,7 +145,7 @@ static void enginePvESetupMenu_setupButtonTexture(Button* button, const sfTextur
     button_setTextureRect_onPress(button, MENU_BUTTON_PRESS_RECT);
 }
 
-static void enginePvESetupMenu_setupButtonText(Button* button, const sfFont* font)
+static void enginePveSetupMenu_setupButtonText(Button* button, const sfFont* font)
 {
     button_setTextFont(button, font);
     button_setTextColor(button, sfWhite);
@@ -153,7 +153,7 @@ static void enginePvESetupMenu_setupButtonText(Button* button, const sfFont* fon
     button_setLetterSpacing(button, 1.2f);
 }
 
-static void enginePvESetupMenu_setupTextField(TextField* textField, const sfTexture* texture, const sfFont* font)
+static void enginePveSetupMenu_setupTextField(TextField* textField, const sfTexture* texture, const sfFont* font)
 {
     textField_setTexture(textField, texture, sfFalse);
 
@@ -173,7 +173,7 @@ static void enginePvESetupMenu_setupTextField(TextField* textField, const sfText
     textField_setSelectedOutlineThickness(textField, 0.0f);
 }
 
-static void enginePvESetupMenu_setupPlainText(DisplayField* field, const sfFont* font, unsigned int size, sfColor color)
+static void enginePveSetupMenu_setupPlainText(DisplayField* field, const sfFont* font, unsigned int size, sfColor color)
 {
     displayField_setTextFont(field, font);
     displayField_setTextColor(field, color);
@@ -189,7 +189,7 @@ static void enginePvESetupMenu_setupPlainText(DisplayField* field, const sfFont*
     displayField_setOutlineThickness(field, 0.0f);
 }
 
-static void enginePvESetupMenu_applyResources(enginePvESetupMenu* menu, const Resources* resources)
+static void enginePveSetupMenu_applyResources(enginePveSetupMenu* menu, const Resources* resources)
 {
     const sfTexture* buttonTexture;
     const sfTexture* textFieldTexture;
@@ -211,23 +211,23 @@ static void enginePvESetupMenu_applyResources(enginePvESetupMenu* menu, const Re
     displayField_setTextureRect(menu->titlebar, MENU_TITLE_RECT);
     displayField_setTextFont(menu->titlebar, titleFont);
 
-    enginePvESetupMenu_setupPlainText(menu->colorLabel, titleFont, 32, sfWhite);
-    enginePvESetupMenu_setupPlainText(menu->engineLevelLabel, titleFont, 32, sfWhite);
-    enginePvESetupMenu_setupPlainText(menu->noticeLabel, plainFont, 18, sfWhite);
-    enginePvESetupMenu_setupPlainText(menu->errorLabel, plainFont, 20, sfRed);
+    enginePveSetupMenu_setupPlainText(menu->colorLabel, titleFont, 32, sfWhite);
+    enginePveSetupMenu_setupPlainText(menu->engineLevelLabel, titleFont, 32, sfWhite);
+    enginePveSetupMenu_setupPlainText(menu->noticeLabel, plainFont, 18, sfWhite);
+    enginePveSetupMenu_setupPlainText(menu->errorLabel, plainFont, 20, sfRed);
 
-    enginePvESetupMenu_setupButtonTexture(menu->color, buttonTexture);
-    enginePvESetupMenu_setupButtonTexture(menu->play, buttonTexture);
-    enginePvESetupMenu_setupButtonTexture(menu->back, buttonTexture);
+    enginePveSetupMenu_setupButtonTexture(menu->color, buttonTexture);
+    enginePveSetupMenu_setupButtonTexture(menu->play, buttonTexture);
+    enginePveSetupMenu_setupButtonTexture(menu->back, buttonTexture);
 
-    enginePvESetupMenu_setupButtonText(menu->color, buttonFont);
-    enginePvESetupMenu_setupButtonText(menu->play, buttonFont);
-    enginePvESetupMenu_setupButtonText(menu->back, buttonFont);
+    enginePveSetupMenu_setupButtonText(menu->color, buttonFont);
+    enginePveSetupMenu_setupButtonText(menu->play, buttonFont);
+    enginePveSetupMenu_setupButtonText(menu->back, buttonFont);
 
-    enginePvESetupMenu_setupTextField(menu->engineLevelField, textFieldTexture, plainFont);
+    enginePveSetupMenu_setupTextField(menu->engineLevelField, textFieldTexture, plainFont);
 }
 
-static void enginePvESetupMenu_setTexts(enginePvESetupMenu* menu)
+static void enginePveSetupMenu_setTexts(enginePveSetupMenu* menu)
 {
     displayField_setTextString(menu->titlebar, "VS ENGINE");
     displayField_setTextString(menu->colorLabel, "COLOR");
@@ -237,13 +237,13 @@ static void enginePvESetupMenu_setTexts(enginePvESetupMenu* menu)
 
     textField_setTextString(menu->engineLevelField, "5");
 
-    enginePvESetupMenu_updateColorText(menu);
+    enginePveSetupMenu_updateColorText(menu);
 
     button_setTextString(menu->play, "Play");
     button_setTextString(menu->back, "Back");
 }
 
-static void enginePvESetupMenu_updateColorText(enginePvESetupMenu* menu)
+static void enginePveSetupMenu_updateColorText(enginePveSetupMenu* menu)
 {
     if (menu->data.playerColor == playerColorWhite)
         button_setTextString(menu->color, "White");
@@ -253,7 +253,7 @@ static void enginePvESetupMenu_updateColorText(enginePvESetupMenu* menu)
         button_setTextString(menu->color, "Random");
 }
 
-static void enginePvESetupMenu_setStyle(enginePvESetupMenu* menu)
+static void enginePveSetupMenu_setStyle(enginePveSetupMenu* menu)
 {
     displayField_setFillColor(menu->titlebar, sfWhite);
     displayField_setTextColor(menu->titlebar, sfWhite);
@@ -276,7 +276,7 @@ static void enginePvESetupMenu_setStyle(enginePvESetupMenu* menu)
     button_setOutlineThickness(menu->back, 0.0f);
 }
 
-static void enginePvESetupMenu_setLayout(enginePvESetupMenu* menu, sfVector2i topLeft, sfVector2i bottomRight)
+static void enginePveSetupMenu_setLayout(enginePveSetupMenu* menu, sfVector2i topLeft, sfVector2i bottomRight)
 {
     float areaWidth;
     float areaHeight;
@@ -358,14 +358,14 @@ static void enginePvESetupMenu_setLayout(enginePvESetupMenu* menu, sfVector2i to
     displayField_setPosition(menu->errorLabel, (sfVector2f){centerX, errorY});
 }
 
-static void enginePvESetupMenu_setActions(enginePvESetupMenu* menu)
+static void enginePveSetupMenu_setActions(enginePveSetupMenu* menu)
 {
-    button_setAction(menu->color, enginePvESetupMenu_onColor, menu);
-    button_setAction(menu->play, enginePvESetupMenu_onPlay, menu);
-    button_setAction(menu->back, enginePvESetupMenu_onBack, menu);
+    button_setAction(menu->color, enginePveSetupMenu_onColor, menu);
+    button_setAction(menu->play, enginePveSetupMenu_onPlay, menu);
+    button_setAction(menu->back, enginePveSetupMenu_onBack, menu);
 }
 
-static sfBool enginePvESetupMenu_parseUnsigned(const char* string, unsigned int* value)
+static sfBool enginePveSetupMenu_parseUnsigned(const char* string, unsigned int* value)
 {
     unsigned int i;
     unsigned int result;
@@ -391,11 +391,11 @@ static sfBool enginePvESetupMenu_parseUnsigned(const char* string, unsigned int*
     return sfTrue;
 }
 
-static sfBool enginePvESetupMenu_validate(enginePvESetupMenu* menu)
+static sfBool enginePveSetupMenu_validate(enginePveSetupMenu* menu)
 {
     unsigned int engineLevel;
 
-    if (!enginePvESetupMenu_parseUnsigned(textField_getTextString(menu->engineLevelField), &engineLevel))
+    if (!enginePveSetupMenu_parseUnsigned(textField_getTextString(menu->engineLevelField), &engineLevel))
     {
         displayField_setTextString(menu->errorLabel, "Only numbers accepted");
         return sfFalse;
@@ -414,14 +414,14 @@ static sfBool enginePvESetupMenu_validate(enginePvESetupMenu* menu)
     return sfTrue;
 }
 
-enginePvESetupMenu* enginePvESetupMenu_create(sfVector2i topLeft, sfVector2i bottomRight, const Resources* resources)
+enginePveSetupMenu* enginePveSetupMenu_create(sfVector2i topLeft, sfVector2i bottomRight, const Resources* resources)
 {
-    enginePvESetupMenu* menu;
+    enginePveSetupMenu* menu;
 
     if (resources == NULL)
         return NULL;
 
-    menu = malloc(sizeof(enginePvESetupMenu));
+    menu = malloc(sizeof(enginePveSetupMenu));
 
     if (menu == NULL)
         return NULL;
@@ -442,7 +442,7 @@ enginePvESetupMenu* enginePvESetupMenu_create(sfVector2i topLeft, sfVector2i bot
     menu->data = vsEngineSetup_getDefault();
 
     menu->active = sfTrue;
-    menu->action = enginePvESetupMenuActionNone;
+    menu->action = enginePveSetupMenuActionNone;
 
     menu->titlebar = displayField_create();
 
@@ -469,20 +469,20 @@ enginePvESetupMenu* enginePvESetupMenu_create(sfVector2i topLeft, sfVector2i bot
         menu->back == NULL
     )
     {
-        enginePvESetupMenu_destroy(menu);
+        enginePveSetupMenu_destroy(menu);
         return NULL;
     }
 
-    enginePvESetupMenu_applyResources(menu, resources);
-    enginePvESetupMenu_setTexts(menu);
-    enginePvESetupMenu_setStyle(menu);
-    enginePvESetupMenu_setLayout(menu, topLeft, bottomRight);
-    enginePvESetupMenu_setActions(menu);
+    enginePveSetupMenu_applyResources(menu, resources);
+    enginePveSetupMenu_setTexts(menu);
+    enginePveSetupMenu_setStyle(menu);
+    enginePveSetupMenu_setLayout(menu, topLeft, bottomRight);
+    enginePveSetupMenu_setActions(menu);
 
     return menu;
 }
 
-void enginePvESetupMenu_destroy(enginePvESetupMenu* menu)
+void enginePveSetupMenu_destroy(enginePveSetupMenu* menu)
 {
     if (menu == NULL)
         return;
@@ -517,7 +517,7 @@ void enginePvESetupMenu_destroy(enginePvESetupMenu* menu)
     free(menu);
 }
 
-void enginePvESetupMenu_updateMouse(enginePvESetupMenu* menu, const Mouse* mouse)
+void enginePveSetupMenu_updateMouse(enginePveSetupMenu* menu, const Mouse* mouse)
 {
     sfVector2i position;
 
@@ -544,7 +544,7 @@ void enginePvESetupMenu_updateMouse(enginePvESetupMenu* menu, const Mouse* mouse
     button_updateMouse(menu->back, mouse);
 }
 
-void enginePvESetupMenu_updateKeyboard(enginePvESetupMenu* menu, const sfEvent* event)
+void enginePveSetupMenu_updateKeyboard(enginePveSetupMenu* menu, const sfEvent* event)
 {
     if (menu == NULL || event == NULL)
         return;
@@ -555,7 +555,7 @@ void enginePvESetupMenu_updateKeyboard(enginePvESetupMenu* menu, const sfEvent* 
     textField_updateKeyboard(menu->engineLevelField, event);
 }
 
-void enginePvESetupMenu_setActive(enginePvESetupMenu* menu, sfBool active)
+void enginePveSetupMenu_setActive(enginePveSetupMenu* menu, sfBool active)
 {
     if (menu == NULL)
         return;
@@ -563,7 +563,7 @@ void enginePvESetupMenu_setActive(enginePvESetupMenu* menu, sfBool active)
     menu->active = active;
 }
 
-sfBool enginePvESetupMenu_isActive(const enginePvESetupMenu* menu)
+sfBool enginePveSetupMenu_isActive(const enginePveSetupMenu* menu)
 {
     if (menu == NULL)
         return sfFalse;
@@ -571,28 +571,28 @@ sfBool enginePvESetupMenu_isActive(const enginePvESetupMenu* menu)
     return menu->active;
 }
 
-EnginePvESetupMenuAction enginePvESetupMenu_getAction(const enginePvESetupMenu* menu)
+enginePveSetupMenuAction enginePveSetupMenu_getAction(const enginePveSetupMenu* menu)
 {
     if (menu == NULL)
-        return enginePvESetupMenuActionNone;
+        return enginePveSetupMenuActionNone;
 
     return menu->action;
 }
 
-EnginePvESetupMenuAction enginePvESetupMenu_consumeAction(enginePvESetupMenu* menu)
+enginePveSetupMenuAction enginePveSetupMenu_consumeAction(enginePveSetupMenu* menu)
 {
-    EnginePvESetupMenuAction action;
+    enginePveSetupMenuAction action;
 
     if (menu == NULL)
-        return enginePvESetupMenuActionNone;
+        return enginePveSetupMenuActionNone;
 
     action = menu->action;
-    menu->action = enginePvESetupMenuActionNone;
+    menu->action = enginePveSetupMenuActionNone;
 
     return action;
 }
 
-VsEngineSetup enginePvESetupMenu_getData(const enginePvESetupMenu* menu)
+VsEngineSetup enginePveSetupMenu_getData(const enginePveSetupMenu* menu)
 {
     if (menu == NULL)
         return vsEngineSetup_getDefault();
@@ -600,7 +600,7 @@ VsEngineSetup enginePvESetupMenu_getData(const enginePvESetupMenu* menu)
     return menu->data;
 }
 
-void enginePvESetupMenu_draw(sfRenderWindow* window, const enginePvESetupMenu* menu)
+void enginePveSetupMenu_draw(sfRenderWindow* window, const enginePveSetupMenu* menu)
 {
     if (window == NULL || menu == NULL)
         return;

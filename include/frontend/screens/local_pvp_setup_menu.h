@@ -8,33 +8,33 @@
 #include "input/mouse.h"
 #include "resources/resources.h"
 
-typedef enum LocalPvPSetupMenuAction
+typedef enum localPvpSetupMenuAction
 {
-    localPvPSetupMenuActionNone,
+    localPvpSetupMenuActionNone,
 
-    localPvPSetupMenuActionStart,
-    localPvPSetupMenuActionBack
+    localPvpSetupMenuActionStart,
+    localPvpSetupMenuActionBack
 
-} LocalPvPSetupMenuAction;
+} localPvpSetupMenuAction;
 
 /* Lifecycle */
-localPvPSetupMenu* localPvPSetupMenu_create(sfVector2i, sfVector2i, const Resources*);
-void localPvPSetupMenu_destroy(localPvPSetupMenu*);
+localPvpSetupMenu* localPvpSetupMenu_create(sfVector2i, sfVector2i, const Resources*);
+void localPvpSetupMenu_destroy(localPvpSetupMenu*);
 
 /* Input */
-void localPvPSetupMenu_updateMouse(localPvPSetupMenu*, const Mouse*);
-void localPvPSetupMenu_updateKeyboard(localPvPSetupMenu*, const sfEvent*);
+void localPvpSetupMenu_updateMouse(localPvpSetupMenu*, const Mouse*);
+void localPvpSetupMenu_updateKeyboard(localPvpSetupMenu*, const sfEvent*);
 
 /* State */
-void localPvPSetupMenu_setActive(localPvPSetupMenu*, sfBool);
-sfBool localPvPSetupMenu_isActive(const localPvPSetupMenu*);
+void localPvpSetupMenu_setActive(localPvpSetupMenu*, sfBool);
+sfBool localPvpSetupMenu_isActive(const localPvpSetupMenu*);
 
-LocalPvPSetupMenuAction localPvPSetupMenu_getAction(const localPvPSetupMenu*);
-LocalPvPSetupMenuAction localPvPSetupMenu_consumeAction(localPvPSetupMenu*);
+localPvpSetupMenuAction localPvpSetupMenu_getAction(const localPvpSetupMenu*);
+localPvpSetupMenuAction localPvpSetupMenu_consumeAction(localPvpSetupMenu*);
 
-LocalPvPSetup localPvPSetupMenu_getData(const localPvPSetupMenu*);
+LocalPvPSetup localPvpSetupMenu_getData(const localPvpSetupMenu*);
 
 /* Utility */
-void localPvPSetupMenu_draw(sfRenderWindow*, const localPvPSetupMenu*);
+void localPvpSetupMenu_draw(sfRenderWindow*, const localPvpSetupMenu*);
 
 #endif // LOCAL_PVP_SETUP_MENU_H

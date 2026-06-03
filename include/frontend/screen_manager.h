@@ -3,9 +3,10 @@
 
 #include <SFML/Graphics.h>
 
+#include "game_session/game_session.h"
+#include "frontend/data/screen_manager_request.h"
 #include "input/mouse.h"
 #include "resources/resources.h"
-#include "frontend/data/screen_manager_request.h"
 
 typedef struct screenManager screenManager;
 
@@ -17,20 +18,30 @@ typedef enum ScreenId
     screenIdCreditsMenu,
 
     screenIdGameSetupMenu,
-    screenIdLocalPvPSetupMenu,
-    screenIdEnginePvESetupMenu
+    screenIdLocalPvpSetupMenu,
+    screenIdEnginePveSetupMenu,
+
+    screenIdGameLocalPvp,
+    screenIdGameEnginePve
 
 } ScreenId;
 
-/* Lifecycle */
+
+// Lifecycle
 screenManager* screenManager_create(sfVector2i, sfVector2i, const Resources*);
 void screenManager_destroy(screenManager*);
 
-/* Input */
+
+// Update
+void screenManager_update(screenManager*, int);
+
+
+// Input
 void screenManager_updateMouse(screenManager*, const Mouse*);
 void screenManager_updateKeyboard(screenManager*, const sfEvent*);
 
-/* State */
+
+// State
 void screenManager_setActive(screenManager*, sfBool);
 sfBool screenManager_isActive(const screenManager*);
 
@@ -40,7 +51,10 @@ ScreenId screenManager_getScreen(const screenManager*);
 ScreenManagerRequest screenManager_getRequest(const screenManager*);
 ScreenManagerRequest screenManager_consumeRequest(screenManager*);
 
-/* Utility */
+const GameSession* screenManager_getCurrentSession(const screenManager*);
+
+
+// Utility
 void screenManager_draw(sfRenderWindow*, const screenManager*);
 
 #endif // SCREEN_MANAGER_H

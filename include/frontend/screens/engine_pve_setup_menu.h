@@ -8,33 +8,33 @@
 #include "input/mouse.h"
 #include "resources/resources.h"
 
-typedef enum EnginePvESetupMenuAction
+typedef enum enginePveSetupMenuAction
 {
-    enginePvESetupMenuActionNone,
+    enginePveSetupMenuActionNone,
 
-    enginePvESetupMenuActionStart,
-    enginePvESetupMenuActionBack
+    enginePveSetupMenuActionStart,
+    enginePveSetupMenuActionBack
 
-} EnginePvESetupMenuAction;
+} enginePveSetupMenuAction;
 
 /* Lifecycle */
-enginePvESetupMenu* enginePvESetupMenu_create(sfVector2i, sfVector2i, const Resources*);
-void enginePvESetupMenu_destroy(enginePvESetupMenu*);
+enginePveSetupMenu* enginePveSetupMenu_create(sfVector2i, sfVector2i, const Resources*);
+void enginePveSetupMenu_destroy(enginePveSetupMenu*);
 
 /* Input */
-void enginePvESetupMenu_updateMouse(enginePvESetupMenu*, const Mouse*);
-void enginePvESetupMenu_updateKeyboard(enginePvESetupMenu*, const sfEvent*);
+void enginePveSetupMenu_updateMouse(enginePveSetupMenu*, const Mouse*);
+void enginePveSetupMenu_updateKeyboard(enginePveSetupMenu*, const sfEvent*);
 
 /* State */
-void enginePvESetupMenu_setActive(enginePvESetupMenu*, sfBool);
-sfBool enginePvESetupMenu_isActive(const enginePvESetupMenu*);
+void enginePveSetupMenu_setActive(enginePveSetupMenu*, sfBool);
+sfBool enginePveSetupMenu_isActive(const enginePveSetupMenu*);
 
-EnginePvESetupMenuAction enginePvESetupMenu_getAction(const enginePvESetupMenu*);
-EnginePvESetupMenuAction enginePvESetupMenu_consumeAction(enginePvESetupMenu*);
+enginePveSetupMenuAction enginePveSetupMenu_getAction(const enginePveSetupMenu*);
+enginePveSetupMenuAction enginePveSetupMenu_consumeAction(enginePveSetupMenu*);
 
-VsEngineSetup enginePvESetupMenu_getData(const enginePvESetupMenu*);
+VsEngineSetup enginePveSetupMenu_getData(const enginePveSetupMenu*);
 
 /* Utility */
-void enginePvESetupMenu_draw(sfRenderWindow*, const enginePvESetupMenu*);
+void enginePveSetupMenu_draw(sfRenderWindow*, const enginePveSetupMenu*);
 
 #endif // ENGINE_PVE_SETUP_MENU_H
